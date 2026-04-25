@@ -1,23 +1,305 @@
 {% extends "home.html" %}
 {% block content %}
-<div style="text-align:center; margin-top:100px;">
-    <h1 style="font-size:54px;">AI Legal Judgement Analyzer</h1>
-    <p style="color:#666; max-width:600px; margin:auto;">
-        Analyze court judgements using Artificial Intelligence.
-        Detect legal issues, classify case types, and retrieve relevant legal provisions.
-    </p>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.hero {
+    padding: 100px 20px 80px;
+    text-align: center;
+}
+.hero h1 {
+    font-size: 64px;
+    font-weight: 700;
+}
+.hero p {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #6b7280;
+}
+.hero button {
+    margin-top: 30px;
+    padding: 14px 36px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+}
+.section {
+    padding: 100px 80px;
+}
+.alt {
+    background: #f9fafb;
+}
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+.card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+.card:hover {
+    transform: translateY(-8px);
+}
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+.card-content {
+    padding: 20px;
+}
+.feature-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+    margin: 60px auto;
+    max-width: 1200px;
+}
+.feature-row div {
+    flex: 1;
+}
+.feature-img {
+    flex: 1;
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 14px;
+}
+.feature-row:nth-child(2) {
+    flex-direction: row-reverse;
+}
+.feature-row:nth-of-type(odd) {
+    flex-direction: row-reverse;
+}
+.feature-text h3 {
+    font-size: 26px;
+    font-weight: 600;
+}
+.feature-text p {
+    color: #6b7280;
+    line-height: 1.7;
+}
+.feature-img {
+    height: 400px;
+    border-radius: 16px;
+}
+.feature-row img {
+    transition: transform 0.4s ease;
+}
+.feature-row:hover img {
+    transform: scale(1.03);
+}
+.footer {
+    background: #2f2c2c;
+    color: #fff;
+    padding: 80px 0;.footer a {
+    color: #e5e5e5;
+    text-decoration: none;
+}
+.footer a:visited {
+    color: #e5e5e5;
+}
+.footer a:hover {
+    color: #ffffff;
+}
+    width: 100%;
+}
+.footer-top,
+.footer-bottom,
+.footer-divider {
+    width: 100%;
+    padding: 0 80px;
+    box-sizing: border-box;
+}
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.footer-left h1 {
+    font-size: 32px;
+}
+.footer-columns {
+    display: flex;
+    gap: 80px;
+    margin-left: auto;
+}
+.footer-col h4 {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 15px;
+}
+.footer-col a {
+    display: block;
+    margin: 8px 0;
+    font-size: 14px;
+    color: #e5e5e5;
+    text-decoration: none;
+}
+.footer-col a:hover {
+    color: #fff;
+}
+.footer-divider {
+    height: 1px;
+    background: #444;
+    margin: 50px auto;
+}
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #aaa;
+}
+.footer-bottom-links {
+    display: flex;
+    gap: 30px;
+}
+.footer a {
+    color: #e5e5e5;
+    text-decoration: none;
+}
+.footer a:visited {
+    color: #e5e5e5;
+}
+.footer a:hover {
+    color: #ffffff;
+}
+</style>
+<!-- HERO -->
+<div class="hero">
+    <h1>AI Legal Judgement Analyzer</h1>
+    <p>Transform complex legal judgements into structured insights using AI.</p>
     <a href="{{ url_for('analyze') }}">
-        <button style="
-            margin-top:30px;
-            padding:14px 35px;
-            background:#2c7be5;
-            color:white;
-            border:none;
-            border-radius:8px;
-            font-size:16px;
-            cursor:pointer;">
-            Start Analysis
-        </button>
+        <button>Start Analysis</button>
     </a>
+</div>
+
+<!-- CARDS -->
+<div class="section alt">
+    <div class="card-grid">
+
+        <a href="{{ url_for('case_understanding') }}" class="card">
+            <img src="{{ url_for('static', filename='Case Understanding.jpg') }}">
+            <div class="card-content">
+                <h3>Case Understanding</h3>
+                <p>Extract key facts and outcomes automatically.</p>
+            </div>
+        </a>
+
+        <a href="{{ url_for('domain_classification') }}" class="card">
+            <img src="{{ url_for('static', filename='Domain Classification.jpg') }}">
+            <div class="card-content">
+                <h3>Domain Classification</h3>
+                <p>Identify legal domains intelligently.</p>
+            </div>
+        </a>
+
+        <a href="{{ url_for('summarization') }}" class="card">
+            <img src="{{ url_for('static', filename='Smart Summarization.jpg') }}">
+            <div class="card-content">
+                <h3>Smart Summarization</h3>
+                <p>Generate concise summaries instantly.</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- FEATURES -->
+<div class="section">
+    <div class="feature-row">
+        <div class="feature-text">
+            <h3>Analyze complex legal documents in seconds</h3>
+            <p>
+                Our AI processes large judgement files and extracts meaningful
+                insights such as legal issues, arguments, and final verdicts.
+            </p>
+        </div>
+        <div class="feature-visual">
+            <img src="{{ url_for('static', filename='analysis.jpg') }}" class="feature-img">
+        </div>
+    </div>
+
+    <div class="feature-row">
+        <div class="feature-visual">
+            <img src="{{ url_for('static', filename='classification.jpg') }}" class="feature-img">
+        </div>
+        <div class="feature-text">
+            <h3>Understand case types automatically</h3>
+            <p>
+                Classification models identify the legal domain of each case,
+                helping you organize and filter large datasets efficiently.
+            </p>
+        </div>
+    </div>
+    <div class="feature-row">
+        <div class="feature-text">
+            <h3>Generate structured legal insights</h3>
+            <p>
+                From raw judgement text to structured outputs — summaries,
+                legal provisions, and insights in a readable format.
+            </p>
+        </div>
+        <div class="feature-visual">
+            <img src="{{ url_for('static', filename='insights.jpg') }}" class="feature-img">
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <div class="footer-top">
+        <!-- LEFT -->
+        <div class="footer-left">
+            <h1>Judgment Analysis</h1>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="footer-columns">
+            <div class="footer-col">
+                <h4>ABOUT</h4>
+                <a href="{{ url_for('careers') }}">Overview</a>
+                <a href="/how-it-works">How It Works</a>
+            </div>
+
+            <div class="footer-col">
+                <h4>RESOURCES</h4>
+                <a href="/help">Support</a>
+                <a href="{{ url_for('api_access') }}">API Access</a>
+            </div>
+
+            <div class="footer-col">
+                <h4>PLATFORM</h4>
+                <a href="{{ url_for('analyze') }}">Analyze</a>
+                <a href="{{ url_for('workspace') }}">Workspace</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+        <div>© 2026 Legal AI. All rights reserved.</div>
+        <div class="footer-bottom-links">
+            <a href="{{ url_for('footer_privacy') }}">Privacy</a>
+            <a href="{{ url_for('footer_terms') }}">Terms</a>
+            <a href="{{ url_for('footer_security') }}">Security</a>
+        </div>
+    </div>
 </div>
 {% endblock %}

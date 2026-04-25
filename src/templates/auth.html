@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                font-family: 'Segoe UI', sans-serif;
+            }
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.25);
+                z-index: 0;
+            }
+            .navbar-custom,
+            .main-container {
+                position: relative;
+                z-index: 1;
+            }
+            .navbar-custom {
+                height: 65px;
+                background: rgba(255,255,255,0.9);
+                border-bottom: 1px solid #e5e7eb;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 50px;
+            }
+            .main-container {
+                height: calc(100vh - 65px);
+                display: flex;
+                justify-content: center; 
+                align-items: center;
+                padding-right: 100px; 
+            }
+            .logo img {
+                height: 40px;
+            }
+            .nav-link-custom {
+                position: relative;
+                cursor: pointer;
+                color: #94a3b8;
+                font-weight: 500;
+                padding-bottom: 5px;
+            }
+            .nav-link-custom::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                bottom: -2px;
+                width: 0%;
+                height: 2px;
+                background: black;
+                transition: width 0.3s ease;
+            }
+            .nav-link-custom:hover {
+                color: black;
+            }
+            .nav-link-custom.active {
+                color: black;
+            }
+            .nav-link-custom.active::after {
+                width: 100%;
+            }
+            .auth-box {
+                width: 420px;
+                background: #fff;
+                padding: 30px;
+                border-radius: 14px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            }
+            .title {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .form-control {
+                margin-bottom: 15px;
+            }
+            .forgot-link {
+                font-size: 14px;
+                color: black;
+                cursor: pointer;
+            }
+            .btn-primary {
+                background: linear-gradient(135deg, black, white);
+                border: none;
+            }
+            .skip-center {
+                text-align: center;
+                margin-top: 15px;
+            }
+            .skip-text {
+                font-size: 16px;
+                color: #6b7280;
+                text-decoration: none;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+            .skip-text:hover {
+                color: black;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="navbar-custom">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='logo.jpg') }}">
+            </div>
+            <div>
+                <span id="navLogin" class="nav-link-custom" onclick="showLogin()">Login</span>
+                <span id="navSignup" class="nav-link-custom ms-3" onclick="showSignup()">Sign Up</span>
+            </div>
+        </div>
+        <div class="main-container">
+            <div class="auth-box">
+                <h4 class="title" id="formTitle">Log In to My Account</h4>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                {% endwith %}
+                
+                <!-- LOGIN -->
+                <form id="loginForm" method="POST" action="/direct-login">
+                    <input type="email" name="email" class="form-control" placeholder="Email" required>
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                    <div style="text-align:right;">
+                        <span class="forgot-link" onclick="showForgot()">Forgot Password?</span>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-3">Login</button>
+                    <div style="text-align:center; margin-top:10px;">
+                        <span style="color:#6b7280;">New to JA? </span>
+                        <span class="forgot-link" onclick="showSignup()" style="font-weight:600;">
+                            Create an Account
+                        </span>
+                    </div>
+                    <div class="skip-center">
+                        <a href="/skip-login" class="skip-text">Skip Login</a>
+                    </div>
+                </form>
+                
+                <!-- SIGNUP -->
+                <form id="signupForm" method="POST" action="{{ url_for('auth.register') }}" style="display:none;">
+                    <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+                    <input type="email" name="email" class="form-control" placeholder="Email" required>
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                    <button class="btn btn-primary w-100">Create Account</button>
+                </form>
+                
+                <!-- FORGOT -->
+                <form id="forgotForm" method="POST" action="{{ url_for('auth.forgot_password') }}" style="display:none;">
+                    <input type="email" name="email" class="form-control" placeholder="Email" required>
+                    <input type="password" name="new_password" class="form-control" placeholder="New Password" required>
+                    <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password" required>
+                    <button class="btn btn-primary w-100">Reset Password</button>
+                    <div style="text-align:center; margin-top:10px;">
+                        <span class="forgot-link" onclick="showLogin()">Back to Login</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+        const loginForm = document.getElementById("loginForm");
+        const signupForm = document.getElementById("signupForm");
+        const forgotForm = document.getElementById("forgotForm");
+        const formTitle = document.getElementById("formTitle");
+        const navLogin = document.getElementById("navLogin");
+        const navSignup = document.getElementById("navSignup");
+        function showLogin() {
+            loginForm.style.display = "block";
+            signupForm.style.display = "none";
+            forgotForm.style.display = "none";
+            formTitle.innerText = "Log In to Your Account";
+            navLogin.classList.add("active");
+            navSignup.classList.remove("active");
+        }
+        function showSignup() {
+            loginForm.style.display = "none";
+            signupForm.style.display = "block";
+            forgotForm.style.display = "none";
+            formTitle.innerText = "Create an Account";
+            navSignup.classList.add("active");
+            navLogin.classList.remove("active");
+        }
+        function showForgot() {
+            loginForm.style.display = "none";
+            signupForm.style.display = "none";
+            forgotForm.style.display = "block";
+            formTitle.innerText = "Reset Your Password";
+            navLogin.classList.remove("active");
+            navSignup.classList.remove("active");
+        }
+       const mode = "{{ mode | default('login') }}";
+        if (mode === "signup") {
+            showSignup();
+        } else if (mode === "forgot") {
+            showForgot();
+        } else {
+            showLogin();
+        }
+        </script>
+    </body>
+</html>

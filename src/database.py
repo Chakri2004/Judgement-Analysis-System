@@ -7,7 +7,7 @@ db = client["judgement_db"]
 predictions_collection = db["predictions"]
 users_collection = db["users"]
 
-def save_prediction(text, case_name, court, judge, doc_type, acts, main_category, nature_of_dispute, source, confidence, subdivisions, user_id, court_decision, summary, embedding=None):
+def save_prediction(text, case_name, court, judge, doc_type, acts, main_category, nature_of_dispute, source, confidence, subdivisions, user_id, court_decision, summary, embedding=None, created_at=None):
     if subdivisions is None:
         subdivisions = []
     data = {
@@ -26,7 +26,8 @@ def save_prediction(text, case_name, court, judge, doc_type, acts, main_category
         "source": source,
         "confidence": confidence,
         "timestamp": datetime.now(),
-        "user_id": user_id
+        "user_id": user_id,
+        "created_at": created_at if created_at else datetime.now()
     }
     result = predictions_collection.insert_one(data)
     return result.inserted_id

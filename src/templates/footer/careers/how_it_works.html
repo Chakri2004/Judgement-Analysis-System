@@ -1,0 +1,140 @@
+{% extends "home.html" %}
+{% block content %}
+
+<style>
+.container{
+    max-width:1000px;
+    margin:auto;
+    padding:80px 20px;
+    line-height:1.9;
+}
+.page-title{
+    font-size:42px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+.subtitle{
+    color:#6b7280;
+    margin-bottom:40px;
+}
+.step{
+    margin-top:40px;
+}
+.step h2{
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+.step p{
+    color:#374151;
+    font-size:15px;
+}
+.flow{
+    margin-top:50px;
+    padding:20px;
+    background:#f3f4f6;
+    border-radius:10px;
+    font-size:14px;
+}
+.note{
+    margin-top:40px;
+    font-size:13px;
+    color:#6b7280;
+}
+</style>
+<div class="container">
+    <div class="page-title">How It Works</div>
+    <div class="subtitle">
+        Understand how AI Legal analyzes judicial documents using machine learning,
+        natural language processing, and retrieval-based systems.
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+        <h2>1. Input Processing</h2>
+        <p>
+            Users upload a legal judgment in PDF format or paste raw legal text.
+            The system extracts textual content using document parsing tools and
+            prepares it for further analysis.
+        </p>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+        <h2>2. Text Preprocessing</h2>
+        <p>
+            The extracted text is cleaned and structured to remove noise,
+            normalize formatting, and prepare it for natural language processing.
+        </p>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+        <h2>3. Information Extraction</h2>
+        <p>
+            The system identifies key elements such as case name, court,
+            judge, legal sections, and important entities using rule-based
+            methods and NLP techniques.
+        </p>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+        <h2>4. Domain Classification</h2>
+        <p>
+            A machine learning model predicts the legal domain of the case
+            (e.g., Criminal Law, Civil Law) based on semantic embeddings
+            generated using LegalBERT.
+        </p>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+        <h2>5. Embedding Generation</h2>
+        <p>
+            The document is converted into vector representations using
+            transformer-based models. These embeddings capture semantic meaning
+            and enable similarity-based retrieval.
+        </p>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step">
+        <h2>6. Retrieval-Augmented Generation (RAG)</h2>
+        <p>
+            The system retrieves similar legal cases from a FAISS vector database
+            and uses them as context to enhance the quality and accuracy of analysis.
+        </p>
+    </div>
+
+    <!-- STEP 7 -->
+    <div class="step">
+        <h2>7. AI-Powered Summary</h2>
+        <p>
+            A large language model generates a concise summary of the case,
+            highlighting key facts, legal issues, and the final judgment.
+        </p>
+    </div>
+
+    <!-- STEP 8 -->
+    <div class="step">
+        <h2>8. Output Generation</h2>
+        <p>
+            The system presents structured results including case understanding,
+            domain classification, legal sections, and summarized insights.
+        </p>
+    </div>
+
+    <!-- FLOW -->
+    <div class="flow">
+        <strong>System Flow:</strong><br><br>
+        Input → Text Extraction → NLP Processing → Domain Prediction → Embeddings → RAG Retrieval → AI Summary → Output
+    </div>
+
+    <!-- NOTE -->
+    <div class="note">
+        This system combines machine learning, natural language processing,
+        and legal-domain models to automate analysis of complex legal documents.
+    </div>
+</div>
+{% endblock %}

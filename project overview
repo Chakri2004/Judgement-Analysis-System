@@ -1,0 +1,90 @@
+## Judgement Analysis System
+
+An AI-powered Legal Intelligence Platform designed to automate the analysis of judicial documents using Machine Learning, NLP, and Retrieval-Augmented Generation (RAG).
+
+The system enables fast, structured, and intelligent understanding of complex legal judgments through advanced AI pipelines.
+
+## Key Features
+
+1.User Authentication (Login / Register / Secure Sessions)
+2.PDF Judgment Processing with automated text extraction
+3.Legal Domain Classification using ML models
+4.AI-powered Case Summarization using LLMs
+5.Semantic Search powered by FAISS vector database
+6.Retrieval-Augmented Generation (RAG) for contextual insights
+7.User Notes & Annotations System
+8.Bookmarking & Case Management
+9.Interactive Dashboard with Insights
+10.Similar Case Retrieval System
+11.System Architecture
+
+The system follows an end-to-end AI pipeline:
+
+Text Extraction → PDF parsing using pdfplumber
+Preprocessing & Chunking → Clean and split large documents
+Embedding Generation → Sentence Transformers (LegalBERT)
+Domain Classification → ML model (XGBoost)
+Vector Search → FAISS for similarity retrieval
+RAG Pipeline → Context-aware retrieval
+LLM Processing → LLaMA 3.3 via Groq API for insights
+
+## Tech Stack
+
+1.Backend
+Python, Flask
+
+2.Frontend
+HTML, CSS, JavaScript
+
+3.Database
+MongoDB
+
+4.Machine Learning
+Scikit-learn (XGBoost)
+PyTorch
+
+5.NLP & AI
+Transformers
+Sentence Embeddings (LegalBERT)
+Retrieval-Augmented Generation (RAG)
+
+6.Vector Search
+FAISS
+
+7.LLM Integration
+Groq API (LLaMA 3.3)
+
+## Dataset & Processing
+Dataset: Supreme Court Judgment PDFs (year-wise structured)
+Processed Data: ~314,599 text chunks
+Training Data: ~5000 labeled samples
+Vector Index: ~2000 embeddings stored in FAISS
+
+## Domain Distribution
+General Law: 68,912
+Insurance Law: 50,804
+Tax Law: 47,484
+Criminal Law: 34,827
+Property Law: 34,587
+Family Law: 27,988
+Contract Law: 17,311
+Arbitration Law: 12,481
+Civil Law: 8,796
+Environmental Law: 5,508
+POCSO: 4,256
+Competition Law: 1,282
+Cyber Law: 363
+
+## Installation & Setup
+1️.Create Virtual Environment
+python -m venv venv
+venv\Scripts\activate
+
+2️.Install Dependencies
+pip install -r requirements.txt
+
+3️.Run Application
+python app.py
+
+4️.Access Application
+http://localhost:5000

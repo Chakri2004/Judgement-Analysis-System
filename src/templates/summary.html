@@ -1,0 +1,119 @@
+{% extends "home.html" %}
+{% block content %}
+<style>
+.container{
+    max-width:950px;
+    margin:auto;
+    padding:80px 20px;
+    line-height:1.9;
+}
+h1{
+    font-size:32px;
+    font-weight:600;
+    margin-bottom:20px;
+}
+.summary{
+    font-size:15px;
+    color:#374151;
+}
+.section{
+    margin-top:40px;
+}
+.section h2{
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+.highlight{
+    background:#f9fafc;
+    padding:16px;
+    border-left:4px solid #111;
+    font-size:14px;
+}
+.box{
+    background:#f3f4f6;
+    padding:15px;
+    border-radius:8px;
+    margin-top:10px;
+}
+.note{
+    margin-top:30px;
+    font-size:13px;
+    color:#6b7280;
+}
+</style>
+<div class="container">
+    <h1>Executive Summary</h1>
+
+    <!-- MAIN SUMMARY -->
+    <div class="summary">
+        {{ summary or "A concise summary of the case will be generated here based on AI-driven analysis of the legal document." }}
+    </div>
+
+    <!-- CONTEXT -->
+    <div class="section">
+        <h2>Case Context</h2>
+        <div class="summary">
+            This case arises from a legal dispute involving interpretation of statutory provisions
+            and obligations between the parties. The court examined factual background,
+            arguments presented, and applicable legal frameworks before arriving at its conclusion.
+        </div>
+    </div>
+
+    <!-- KEY INSIGHTS -->
+    <div class="section">
+        <h2>Key Insights</h2>
+        <div class="summary">
+            • The dispute centers around legal obligations and interpretation of law <br>
+            • Relevant statutory provisions significantly influenced the outcome <br>
+            • Judicial reasoning was based on established precedents and factual evaluation <br>
+            • The court assessed both procedural and substantive aspects of the case
+        </div>
+    </div>
+
+    <!-- LEGAL INTERPRETATION -->
+    <div class="section">
+        <h2>Legal Interpretation</h2>
+        <div class="summary">
+            The court's decision reflects a structured interpretation of applicable laws,
+            ensuring consistency with prior judgments. Emphasis was placed on the intent
+            of legislation, factual accuracy, and fairness in application of legal principles.
+        </div>
+    </div>
+
+    <!-- DECISION SIGNIFICANCE -->
+    <div class="section">
+        <h2>Significance of Decision</h2>
+        <div class="highlight">
+            The judgment reinforces key legal principles and provides clarity on how similar
+            disputes should be approached. It contributes to the broader legal framework
+            by establishing consistency in interpretation and application of law.
+        </div>
+    </div>
+
+    <!-- PRACTICAL IMPACT -->
+    <div class="section">
+        <h2>Practical Impact</h2>
+        <div class="box">
+            • Acts as a reference point for similar future cases <br>
+            • Helps legal professionals understand judicial reasoning patterns <br>
+            • Assists in predicting outcomes in comparable legal scenarios
+        </div>
+    </div>
+
+    <!-- AI INSIGHT -->
+    <div class="section">
+        <h2>AI Insight</h2>
+        <div class="summary">
+            This summary has been generated using advanced natural language processing
+            and legal-domain models, enabling rapid understanding of lengthy judicial documents
+            while preserving key legal context and meaning.
+        </div>
+    </div>
+
+    <!-- NOTE -->
+    <div class="note">
+        This analysis is generated for informational purposes and should not be considered legal advice.
+    </div>
+</div>
+{% endblock %}

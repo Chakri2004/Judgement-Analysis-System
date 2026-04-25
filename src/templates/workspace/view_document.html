@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Review</title>
+    <style>
+    body{
+        font-family: "Segoe UI", sans-serif;
+        background:#f4f6fb;
+        padding:40px;
+    }
+    .container{
+        max-width:1100px;
+        margin:auto;
+    }
+    h1{
+        margin-bottom:25px;
+        color:#2c3e50;
+    }
+    .card{
+        background:white;
+        padding:30px;
+        border-radius:14px;
+        box-shadow:0 8px 25px rgba(0,0,0,0.05);
+    }
+    .meta-grid{
+        display:grid;
+        grid-template-columns:1fr 1fr 80px;
+        gap:20px;
+        margin-bottom:25px;
+        align-items:center;
+    }
+    .meta-box{
+        background:#f8f9fc;
+        padding:15px;
+        border-radius:10px;
+    }
+    .meta-title{
+        font-size:12px;
+        color:#777;
+    }
+    .meta-value{
+        font-weight:600;
+        font-size:16px;
+    }
+    .badge{
+        padding:6px 14px;
+        border-radius:20px;
+        font-size:12px;
+        color:white;
+    }
+    .high{ background:#2ecc71; }
+    .low{ background:#e74c3c; }
+    .section-title{
+        margin-top:25px;
+        margin-bottom:10px;
+        font-weight:600;
+        font-size:18px;
+        border-left:4px solid #2563eb;
+        padding-left:10px;
+    }
+    .bookmark-btn{
+        background:none;
+        border:none;
+        font-size:22px;
+        cursor:pointer;
+        padding:0;
+        color:#444;
+    }
+
+    .bookmark-btn:hover{
+        color:black;
+    }
+    .meta-box:last-child{
+        background:none;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+    .summary{
+        background:#eef2ff;
+        border-left:4px solid #2563eb;
+        padding:15px;
+        border-radius:8px;
+        line-height:1.6;
+    }
+    .sub-card{
+        background:#f9fafc;
+        padding:15px;
+        border-radius:10px;
+        border:1px solid #eee;
+        margin-bottom:15px;
+    }
+    .document-box{
+        background:#fff;
+        padding:20px;
+        border-radius:10px;
+        border:1px solid #e5e7eb;
+        max-height:400px;
+        overflow-y:auto;
+        white-space:pre-wrap;
+    }
+    .footer-actions{
+        display:flex;
+        justify-content:flex-end;
+        margin-top:20px;
+    }
+    .toast{
+        position:fixed;
+        bottom:25px;
+        left:50%;
+        transform:translateX(-50%) translateY(20px);
+        background:rgba(0,0,0,0.7);
+        backdrop-filter:blur(10px);
+        color:white;
+        padding:12px 20px;
+        border-radius:10px;
+        font-size:14px;
+        display:flex;
+        align-items:center;
+        gap:8px;
+        opacity:0;
+        transition:0.3s;
+        z-index:999;
+    }
+    .toast.show{
+        opacity:1;
+        transform:translateX(-50%) translateY(0);
+    }
+    .toast i{
+        font-size:16px;
+        opacity:0.9;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Document Review</h1>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        
+        <div class="card">
+
+            <!-- META -->
+            <div class="meta-grid">
+                <div class="meta-box">
+                    <div class="meta-title">Category</div>
+                    <div class="meta-value">{{ doc.main_category }}</div>
+                </div>
+
+                <div class="meta-box">
+                    <div class="meta-title">Confidence</div>
+                    <div class="meta-value">{{ doc.confidence }}%</div>
+                </div>
+
+                <div class="meta-box">
+                    <button class="bookmark-btn" onclick="toggleBookmark('{{ doc._id }}', this)">
+                        <i class="{% if doc.bookmarked %}fa-solid{% else %}fa-regular{% endif %} fa-bookmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CASE NAME -->
+            <h3 style="margin-top:15px;">
+                {{ doc.case_name if doc.case_name else "Unknown Case" }}
+            </h3>
+
+            <!-- QUICK INSIGHTS -->
+            <div class="summary">
+                <b>Insights</b><br>
+                Category: {{ doc.main_category }}<br>
+                Confidence: {{ doc.confidence }}%<br>
+                Type: {{ doc.nature_of_dispute }}
+            </div>
+
+            <!-- AI SUMMARY -->
+            {% if doc.summary %}
+            <div class="section-title">AI Summary</div>
+            <div class="summary">
+                {{ doc.summary }}
+            </div>
+            {% endif %}
+
+            <!-- LEGAL ISSUES -->
+            {% if doc.subdivisions %}
+            <div class="section-title">Subdivisions</div>
+
+            {% for sub in doc.subdivisions %}
+            <div class="sub-card">
+                <h4>{{ loop.index }}. {{ sub.title }}</h4>
+                <p><b>Law:</b> {{ sub.law }}</p>
+                <p><b>Severity:</b> {{ sub.severity }}</p>
+                <p>{{ sub.explanation }}</p>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- CASE SUMMARY -->
+            <div class="section-title">Case Summary</div>
+            <div class="summary">
+                {{ doc.nature_of_dispute }}
+            </div>
+
+            <div class="section-title" onclick="toggleText()" style="cursor:pointer;">
+                Full Document (View)
+            </div>
+
+            <div id="docText" class="document-box" style="display:none;">
+                {{ doc.text }}
+            </div>
+        </div>
+    </div>
+    <script>
+    function toggleText(){
+        let el = document.getElementById("docText");
+        el.style.display = el.style.display === "none" ? "block" : "none";
+    }
+    </script>
+    <script>
+    async function toggleBookmark(id, btn){
+        const res = await fetch("/bookmark/" + id, {
+            method: "POST"
+        });
+        const data = await res.json();
+        if(data.status === "success"){
+            const icon = btn.querySelector("i");
+            if(data.bookmarked){
+                icon.classList.remove("fa-regular");
+                icon.classList.add("fa-solid");
+            } else {
+                icon.classList.remove("fa-solid");
+                icon.classList.add("fa-regular");
+            }
+            let toast = document.getElementById("toast");
+            toast.innerHTML = data.bookmarked 
+                ? '<i class="fa-solid fa-bookmark"></i> Added to bookmarks'
+                : '<i class="fa-solid fa-bookmark"></i> Removed from bookmarks';
+
+            toast.classList.add("show");
+            setTimeout(()=>{
+                toast.classList.remove("show");
+            },2000);
+        }
+    }
+    </script>
+    <div id="toast" class="toast"></div>
+</body>
+</html>

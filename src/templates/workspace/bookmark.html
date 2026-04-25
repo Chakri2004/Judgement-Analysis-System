@@ -1,6 +1,5 @@
 {% extends "home.html" %}
 {% block content %}
-
 <style>
 .bookmark-container{
     max-width:900px;
@@ -21,7 +20,6 @@ h1 i{
     display:block;
     width:100%;
 }
-
 .bookmark-card a:hover{
     color:black;
 }
@@ -34,35 +32,32 @@ h1 i{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    cursor:pointer;
+    cursor:default;
     transition:0.2s;
 }
-
 .bookmark-card:hover{
     transform:translateY(-3px);
     box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
-
 .case-name{
     font-size:16px;
     font-weight:600;
 }
-
 .case-actions{
     display:flex;
     align-items:center;
     gap:12px;
 }
-
 .remove-btn{
-    background:none;
+    background:#f3f4f6;
     border:none;
-    font-size:18px;
+    padding:6px 10px;
+    border-radius:6px;
+    font-size:13px;
     cursor:pointer;
 }
-
 .remove-btn:hover{
-    color:black;
+    background:#e5e7eb;
 }
 .toast{
     position:fixed;
@@ -86,7 +81,6 @@ h1 i{
     margin-top:20px;
 }
 </style>
-
 <div class="bookmark-container">
     <h1>Bookmarked Cases</h1>
     {% if documents %}
@@ -95,9 +89,9 @@ h1 i{
         <div style="flex:1">
             <div class="case-name">
                 {% if doc.type == "note" %}
-                <a href="{{ url_for('view_note', id=doc._id) }}">
+                <div>
                     {{ doc.case_name }}
-                </a>
+                </div>
                 {% else %}
                 <a href="{{ url_for('view_prediction', id=doc._id) }}">
                     {{ doc.nature_of_dispute[:80] }}...
@@ -105,13 +99,27 @@ h1 i{
                 {% endif %}
             </div>
         </div>
+
         <div class="case-actions">
+
+            {% if doc.type == "note" %}
             <button class="remove-btn"
-                onclick="event.stopPropagation(); removeBookmark('{{ doc._id }}', this)">
-                <i class="fa-solid fa-star"></i>
+                onclick="window.location.href='{{ url_for('view_note', id=doc._id) }}'">
+                View
             </button>
-            {% if doc.type != "note" %}
+
+            {% else %}
+            <button class="remove-btn"
+                onclick="window.location.href='{{ url_for('view_prediction', id=doc._id) }}'">
+                View
+            </button>
             {% endif %}
+
+            <button class="remove-btn"
+                onclick="removeBookmark('{{ doc._id }}', this)">
+                Remove
+            </button>
+
         </div>
     </div>
     {% endfor %}
@@ -119,7 +127,9 @@ h1 i{
     <p class="empty">No bookmarked cases yet.</p>
     {% endif %}
 </div>
+
 <div id="toast" class="toast"></div>
+
 <script>
     async function removeBookmark(id,btn){
         let response = await fetch("/bookmark/"+id,{

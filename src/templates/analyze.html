@@ -1,210 +1,655 @@
 {% extends "home.html" %}
 {% block content %}
+
 <style>
-body{
-    background:#f5f5f5;
-    font-family: "Segoe UI",sans-serif;
-}
-.container-main{
-    max-width:900px;
-    margin:auto;
-    padding-top:40px;
-}
-.header{
-    text-align:center;
-    margin-bottom:35px;
-}
-.header h1{
-    font-size:38px;
-    font-weight:700;
-    color:black;
-}
-.header p{
-    color:#555;
-    font-size:16px;
-}
-.card{
-    background:white;
-    padding:40px;
-    border-radius:12px;
-    border:1px solid #e5e5e5;
-    box-shadow:0 5px 15px rgba(0,0,0,0.05);
-}
-textarea{
-    width:100%;
-    height:200px;
-    padding:14px;
-    border-radius:8px;
-    border:1px solid #d1d5db;
-    resize:none;
-    font-size:14px;
-}
-textarea:focus{
-    outline:none;
-    border:1px solid black;
-}
-.btn-main{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:8px;
-    background:#2563eb;
-    color:white;
-    font-size:16px;
-    font-weight:600;
-    cursor:pointer;
-    margin-top:20px;
-}
-.btn-main:hover{
-    background:#1e40af;
-}
-.sample-btn{
-    padding:7px 14px;
-    border:1px solid #ccc;
-    background:white;
-    color:black;
-    border-radius:6px;
-    margin-bottom:10px;
-    cursor:pointer;
-    font-size:13px;
-}
-.sample-btn:hover{
-    background:#f3f3f3;
-}
-.upload-box{
-    border:2px dashed #ccc;
-    padding:40px;
-    border-radius:12px;
-    text-align:center;
-    background:white;
-    display:block;
-    cursor:pointer;
-    transition:0.2s;
-}
-.upload-box:hover{
-    background:#f9fafc;
-    border-color:#2563eb;
-}
-.upload-box input{
-    display:none;
-}
-.upload-btn{
-    padding:10px 20px;
-    background:black;
-    border:none;
-    color:white;
-    border-radius:6px;
-    font-size:14px;
-    cursor:pointer;
-}
-.upload-btn:hover{
-    background:#333;
-}
-.upload-text{
-    margin-top:12px;
-    color:#666;
-}
-.upload-box.dragging{
-    border-color:#2563eb;
-    background:#eef3ff;
-}
-.file-name{
-    margin-top:10px;
-    font-weight:600;
-    color:black;
-}
-.section-title{
-    margin-top:25px;
-    margin-bottom:10px;
-    font-weight:600;
-    font-size:16px;
-    color:black;
-}
+  .an-page {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px 80px;
+  }
+
+  .an-wrap {
+    width: 100%;
+    max-width: 680px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .an-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .an-header-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eef3ff;
+    color: var(--accent);
+    border: 1px solid #c7d9ff;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .an-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .an-header p {
+    font-size: 15px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  .an-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(13,17,23,0.09), 0 2px 8px rgba(13,17,23,0.04);
+    overflow: hidden;
+    position: relative;
+  }
+  .an-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent) 0%, #5b8dee 50%, var(--accent-2) 100%);
+  }
+  .an-card-body { padding: 32px; }
+
+  .an-toggle {
+    display: flex;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+  .an-toggle-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: all 0.2s ease;
+  }
+  .an-toggle-btn svg { width: 15px; height: 15px; }
+  .an-toggle-btn:hover:not(.active) {
+    background: var(--surface);
+    color: var(--ink-soft);
+  }
+  .an-toggle-btn.active {
+    background: var(--surface);
+    color: var(--accent);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(13,17,23,0.08);
+  }
+
+  .an-textarea-wrap { position: relative; }
+  .an-textarea {
+    width: 100%;
+    height: 200px;
+    padding: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    resize: vertical;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--surface);
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  .an-textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(26,86,219,0.08);
+  }
+  .an-textarea::placeholder { color: var(--ink-muted); }
+  .an-char-count {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-family: 'DM Mono', monospace;
+    pointer-events: none;
+  }
+
+  .an-upload-box {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 48px 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+  }
+  .an-upload-box:hover {
+    border-color: var(--accent);
+    background: #f5f8ff;
+  }
+  .an-upload-box.dragging {
+    border-color: var(--accent);
+    background: #eef3ff;
+    transform: scale(1.01);
+  }
+  .an-upload-box input { display: none; }
+
+  .an-upload-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 14px;
+    display: block;
+    object-fit: contain;
+    transition: transform 0.2s;
+  }
+  .an-upload-box:hover .an-upload-icon { transform: translateY(-3px); }
+
+  .an-upload-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .an-upload-sub {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .an-upload-sub b { color: var(--accent); }
+
+  .an-file-info {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    background: #eef3ff;
+    border: 1px solid #c7d9ff;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 12px;
+  }
+  .an-file-info.show { display: flex; }
+  .an-file-info svg { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+  .an-file-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .an-file-size {
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+  }
+  .an-file-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ink-muted);
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+  }
+  .an-file-remove:hover { color: #dc2626; }
+  .an-file-remove svg { width: 14px; height: 14px; }
+
+  .an-error {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #dc2626;
+    font-weight: 500;
+  }
+  .an-error.show { display: flex; }
+  .an-error svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  .an-tips {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .an-tip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .an-tip svg { width: 12px; height: 12px; }
+
+  .an-submit {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .an-submit:hover { opacity: 0.92; transform: translateY(-1px); }
+  .an-submit:active { transform: translateY(0); }
+  .an-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .an-submit svg { width: 18px; height: 18px; }
+
+  .an-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .an-loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(13,17,23,0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+  }
+  .an-loading-overlay.show { display: flex; }
+  .an-loading-box {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 36px 44px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(13,17,23,0.2);
+    animation: fadeUp 0.3s ease both;
+  }
+  .an-loading-ring {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--surface-3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  .an-loading-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .an-loading-sub {
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .an-loading-steps {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+  }
+  .an-loading-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .an-loading-step.visible { opacity: 1; }
+  .an-loading-step svg { width: 14px; height: 14px; color: var(--accent); }
 </style>
-<div class="container-main">
-    <div class="header">
-        <h1>AI Legal Judgement Analyzer</h1>
-        <p>
-            Upload or paste a judgement to automatically classify the case,
-            detect legal issues, and retrieve relevant legal provisions using AI.
-        </p>
+
+<div class="an-page">
+  <div class="an-wrap">
+
+    <!-- HEADER -->
+    <div class="an-header">
+      <p>Paste the judgment text or upload a PDF — the AI will classify the domain</p>
     </div>
-    <div class="card">
-        <h2 style="margin-bottom:5px;">Judgement Analysis</h2>
-        <p style="color:#6b7280;margin-bottom:20px;">
-            AI-based Hierarchical Legal Intelligence System
-        </p>
-        <form method="POST" enctype="multipart/form-data">
-            <div class="section-title">Paste Text</div>
-            <textarea name="judgement" id="judgementBox"
-            placeholder="Paste text here..."></textarea>
-            <div class="section-title">Upload PDF</div>
-            <label class="upload-box" id="dropArea">
-                <input id="pdfUpload" type="file" name="pdf_file" accept=".pdf">
-                <div id="uploadContent">
-                    <p class="upload-text">
-                        Drag & Drop your PDF here
-                    </p>
-                    <p style="color:#888;font-size:13px;">or click to upload</p>
-                </div>
+
+    <!-- CARD -->
+    <div class="an-card">
+      <div class="an-card-body">
+
+        <!-- TOGGLE -->
+        <div class="an-toggle">
+          <button type="button" class="an-toggle-btn active" id="btnText" onclick="switchMode('text')">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 4h12M2 8h10M2 12h7"/>
+            </svg>
+            Paste Text
+          </button>
+          <button type="button" class="an-toggle-btn" id="btnPdf" onclick="switchMode('pdf')">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 2h8l2 2v10H2V2z"/><path d="M9 2v4h5"/>
+              <path d="M5 9h6M5 12h4"/>
+            </svg>
+            Upload PDF
+          </button>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="analyzeForm" action="/analyze">
+
+          <!-- TEXT SECTION -->
+          <div id="textSection">
+            <div class="an-textarea-wrap">
+              <textarea
+                name="judgement"
+                id="judgementBox"
+                class="an-textarea"
+                placeholder="Paste..."
+                oninput="updateCharCount(this)"
+              ></textarea>
+              <span class="an-char-count" id="charCount">0 chars</span>
+            </div>
+            <div class="an-tips">
+              <span class="an-tip">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="4"/><path d="M6 4v2.5"/></svg>
+                Min. 200 characters for accurate analysis
+              </span>
+              <span class="an-tip">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h8M2 6h6M2 9h4"/></svg>
+                Include full judgment for best results
+              </span>
+            </div>
+          </div>
+
+          <!-- PDF SECTION -->
+          <div id="pdfSection" style="display:none;">
+            <label class="an-upload-box" id="dropArea">
+              <input
+                id="pdfUpload"
+                type="file"
+                name="pdf_file"
+                accept=".pdf,application/pdf"
+              >
+              <div>
+                <img
+                  src="{{ url_for('static', filename='pdf-icon.png') }}"
+                  class="an-upload-icon"
+                  alt="PDF"
+                  onerror="this.style.display='none'"
+                >
+                <div class="an-upload-title">Drop your PDF here</div>
+                <div class="an-upload-sub">or <b>click to browse</b></div>
+                <div class="an-upload-sub" style="margin-top:6px;">PDF only · Max 20 MB</div>
+              </div>
             </label>
-            <p id="fileName" class="file-name"></p>
-            <button type="submit" class="btn-main" id="analyzeBtn">
-                Analyze
-            </button>
+
+            <!-- File info shown after selection -->
+            <div class="an-file-info" id="fileInfo">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 2h8l2 2v10H2V2z"/><path d="M9 2v4h5"/>
+              </svg>
+              <span class="an-file-name" id="fileName"></span>
+              <span class="an-file-size" id="fileSize"></span>
+              <button type="button" class="an-file-remove" onclick="clearFile()" title="Remove file">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 2l10 10M12 2L2 12"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Error shown for wrong file type / size -->
+            <div class="an-error" id="fileError">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 4a.75.75 0 011.5 0v3.5a.75.75 0 01-1.5 0V5zm.75 7a1 1 0 100-2 1 1 0 000 2z"/>
+              </svg>
+              <span id="fileErrorMsg"></span>
+            </div>
+          </div>
+
+          <!-- SUBMIT -->
+          <button type="submit" class="an-submit" id="analyzeBtn">
+            <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="9" r="7"/>
+              <path d="M6 9l2 2 4-4"/>
+            </svg>
+            <span id="btnLabel">Analyse Case</span>
+            <span class="an-spinner" id="btnSpinner"></span>
+          </button>
+
         </form>
+      </div>
     </div>
+
+  </div>
 </div>
+
+<!-- LOADING OVERLAY -->
+<div class="an-loading-overlay" id="loadingOverlay">
+  <div class="an-loading-box">
+    <div class="an-loading-ring"></div>
+    <div class="an-loading-title">Analysing your case…</div>
+    <div class="an-loading-sub">This may take 15-30 seconds</div>
+    <div class="an-loading-steps">
+      <div class="an-loading-step" id="step1">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M5 7l1.5 1.5L9 5"/></svg>
+        Extracting text and metadata
+      </div>
+      <div class="an-loading-step" id="step2">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M5 7l1.5 1.5L9 5"/></svg>
+        Classifying legal domain
+      </div>
+      <div class="an-loading-step" id="step3">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M5 7l1.5 1.5L9 5"/></svg>
+        Identifying legal provisions
+      </div>
+      <div class="an-loading-step" id="step4">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M5 7l1.5 1.5L9 5"/></svg>
+        Generating summary and risk analysis
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-function loadSample(){
-    document.getElementById("judgementBox").value =
-    `The petitioner filed an appeal under Section 389 CrPC seeking suspension of sentence during the pendency of the appeal. The court examined whether exemption from personal appearance could be granted and whether adjournment of the case was justified.`;
-}
-document.getElementById("pdfUpload").addEventListener("change", function(){
-    const file = this.files[0];
-    if(file){
-        let size = (file.size / 1024 / 1024).toFixed(2);
-        document.getElementById("fileName").innerHTML =
-        '<img src="/static/pdf-icon.png" style="width:22px;margin-right:6px;vertical-align:middle;">'
-        + file.name + " (" + size + " MB)";
+  // ── MODE SWITCH ──
+  function switchMode(mode) {
+    document.getElementById("textSection").style.display = mode === "text" ? "block" : "none";
+    document.getElementById("pdfSection").style.display  = mode === "pdf"  ? "block" : "none";
+    document.getElementById("btnText").classList.toggle("active", mode === "text");
+    document.getElementById("btnPdf").classList.toggle("active", mode === "pdf");
+    hideError();
+  }
+
+  // ── CHAR COUNT ──
+  function updateCharCount(el) {
+    const n = el.value.length;
+    const el2 = document.getElementById("charCount");
+    el2.textContent = n.toLocaleString() + " chars";
+    el2.style.color = n > 0 && n < 200 ? "#dc2626" : "var(--ink-muted)";
+  }
+
+  // ── FILE VALIDATION — FIX: validates type AND size ──
+  const MAX_MB = 20;
+
+  function handleFile(file) {
+    hideError();
+    clearFileDisplay();
+
+    if (!file) return;
+
+    // FIX: validate file type explicitly (drag & drop bypasses accept attribute)
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      showError("Only PDF files are accepted. Please upload a .pdf file.");
+      return false;
     }
-});
-document.querySelector("form").addEventListener("submit", function(e){
-    const text = document.getElementById("judgementBox").value.trim();
-    const file = document.getElementById("pdfUpload").files.length;
-    if(!text && !file){
-        alert("Please paste text or upload a PDF.");
-        e.preventDefault();
-        return;
+
+    // FIX: validate file size
+    const sizeMB = file.size / 1024 / 1024;
+    if (sizeMB > MAX_MB) {
+      showError(`File is too large (${sizeMB.toFixed(1)} MB). Maximum allowed size is ${MAX_MB} MB.`);
+      return false;
     }
-    document.getElementById("analyzeBtn").innerText="Analyzing...";
-});
-const dropArea = document.getElementById("dropArea");
-const fileInput = document.getElementById("pdfUpload");
-["dragenter","dragover"].forEach(eventName=>{
-    dropArea.addEventListener(eventName, (e)=>{
-        e.preventDefault();
-        dropArea.style.borderColor="#2563eb";
-        dropArea.style.background="#eef3ff";
+
+    // Show file info
+    document.getElementById("fileName").textContent = file.name;
+    document.getElementById("fileSize").textContent = sizeMB.toFixed(2) + " MB";
+    document.getElementById("fileInfo").classList.add("show");
+    return true;
+  }
+
+  function clearFile() {
+    document.getElementById("pdfUpload").value = "";
+    clearFileDisplay();
+    hideError();
+  }
+
+  function clearFileDisplay() {
+    document.getElementById("fileName").textContent = "";
+    document.getElementById("fileSize").textContent = "";
+    document.getElementById("fileInfo").classList.remove("show");
+  }
+
+  function showError(msg) {
+    document.getElementById("fileErrorMsg").textContent = msg;
+    document.getElementById("fileError").classList.add("show");
+  }
+
+  function hideError() {
+    document.getElementById("fileError").classList.remove("show");
+  }
+
+  // File input change
+  document.getElementById("pdfUpload").addEventListener("change", function() {
+    if (this.files[0]) handleFile(this.files[0]);
+  });
+
+  // ── DRAG & DROP ──
+  const dropArea = document.getElementById("dropArea");
+
+  ["dragenter", "dragover"].forEach(ev => {
+    dropArea.addEventListener(ev, e => {
+      e.preventDefault();
+      dropArea.classList.add("dragging");
     });
-});
-["dragleave","drop"].forEach(eventName=>{
-    dropArea.addEventListener(eventName, (e)=>{
-        e.preventDefault();
-        dropArea.style.borderColor="#ccc";
-        dropArea.style.background="white";
+  });
+
+  ["dragleave", "drop"].forEach(ev => {
+    dropArea.addEventListener(ev, e => {
+      e.preventDefault();
+      dropArea.classList.remove("dragging");
     });
-});
-dropArea.addEventListener("drop",(e)=>{
-    const files = e.dataTransfer.files;
-    if(files.length){
-        fileInput.files = files;
-        const file = files[0];
-        let size = (file.size / 1024 / 1024).toFixed(2);
-        document.getElementById("fileName").innerHTML =
-        '<img src="/static/pdf-icon.png" style="width:22px;margin-right:6px;vertical-align:middle;">'
-        + file.name + " (" + size + " MB)";
+  });
+
+  dropArea.addEventListener("drop", e => {
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      // Set file on the input so it submits with the form
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      document.getElementById("pdfUpload").files = dt.files;
+      handleFile(file);
     }
-});
+  });
+
+  // ── FORM SUBMIT ──
+  document.getElementById("analyzeForm").addEventListener("submit", function(e) {
+    const mode    = document.getElementById("textSection").style.display !== "none" ? "text" : "pdf";
+    const text    = document.getElementById("judgementBox").value.trim();
+    const fileInput = document.getElementById("pdfUpload");
+    const hasFile = fileInput.files && fileInput.files.length > 0;
+
+    // Validation
+    if (mode === "text" && text.length === 0) {
+      e.preventDefault();
+      showError("Please paste some judgment text before submitting.");
+      document.getElementById("judgementBox").focus();
+      return;
+    }
+
+    if (mode === "text" && text.length < 50) {
+      e.preventDefault();
+      showError("The text is too short for meaningful analysis. Please paste the full judgment.");
+      document.getElementById("judgementBox").focus();
+      return;
+    }
+
+    if (mode === "pdf" && !hasFile) {
+      e.preventDefault();
+      showError("Please select a PDF file before submitting.");
+      return;
+    }
+
+    // FIX: validate again on submit in case file was set programmatically
+    if (mode === "pdf" && hasFile) {
+      const ok = handleFile(fileInput.files[0]);
+      if (!ok) { e.preventDefault(); return; }
+    }
+
+    // Show loading state
+    const btn = document.getElementById("analyzeBtn");
+    btn.disabled = true;
+    document.getElementById("btnLabel").textContent = "Analysing…";
+    document.getElementById("btnSpinner").style.display = "inline-block";
+
+    // Show full loading overlay with staggered steps
+    document.getElementById("loadingOverlay").classList.add("show");
+    const steps = ["step1", "step2", "step3", "step4"];
+    steps.forEach((id, i) => {
+      setTimeout(() => {
+        document.getElementById(id).classList.add("visible");
+      }, 600 + i * 1800);
+    });
+  });
 </script>
+
 {% endblock %}

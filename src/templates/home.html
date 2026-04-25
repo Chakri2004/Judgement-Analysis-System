@@ -1,96 +1,261 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Judgement Analysis</title>
-        <link rel="icon" type="image/png" sizes="32x32"
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a56db">
+    <title>Judgement Analysis</title>
+
+    <link rel="icon" type="image/png" sizes="32x32"
         href="{{ url_for('static', filename='favicon-32x32.png') }}">
-        <link rel="icon" type="image/png" sizes="16x16"
-            href="{{ url_for('static', filename='favicon-16x16.png') }}">
-        <link rel="shortcut icon"
-            href="{{ url_for('static', filename='favicon.ico') }}">
-        <link rel="apple-touch-icon"
-            href="{{ url_for('static', filename='apple-touch-icon.png') }}">
-        <link rel="manifest"
-            href="{{ url_for('static', filename='site.webmanifest') }}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-        <style>
-        body { 
-            margin:0; 
-            font-family:"Segoe UI", sans-serif; 
-            background:#f4f6f9; 
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="shortcut icon"
+        href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon"
+        href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+    <link rel="manifest"
+        href="{{ url_for('static', filename='site.webmanifest') }}">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --ink:       #0d1117;
+            --ink-soft:  #4a5568;
+            --ink-muted: #8a96a3;
+            --surface:   #ffffff;
+            --surface-2: #f7f8fa;
+            --bg:        #f0f3f8;
+            --accent:    #1a56db;
+            --accent-2:  #0e3fa3;
+            --border:    #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(13,17,23,0.06);
+            --shadow-md: 0 4px 16px rgba(13,17,23,0.08);
+            --radius:    12px;
+            --font-body: 'DM Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-mono: 'DM Mono', 'Consolas', monospace;
         }
-        .main { 
-            padding:40px; 
+
+        html {
+            height: 100%;
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
         }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            animation: pageFade 0.4s ease both;
+        }
+        .main {
+            flex: 1;
+            padding: 0;
+        }
+
+        .navbar {
+            animation: slideDownNav 0.4s ease both;
+        }
+
+        #appContent {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #appContent.fade-out {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
         .search-overlay {
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            background:rgba(0,0,0,0.3);
-            backdrop-filter:blur(10px);
-            display:none;
-            justify-content:center;
-            align-items:flex-start;
-            padding-top:120px;
-            z-index:2000;
-            animation:fadeIn 0.3s ease;
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 17, 23, 0.97);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 80px;
+            z-index: 2000;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s ease both;
         }
-        .search-box {
-            background:rgba(255,255,255,0.2);
-            backdrop-filter:blur(15px);
-            padding:20px 30px;
-            border-radius:14px;
-            width:50%;
-            display:flex;
-            align-items:center;
-            box-shadow:0 10px 40px rgba(0,0,0,0.25);
-            animation:slideDown 0.3s ease;
-        }
-        .search-box input {
-            flex:1;
-            padding:12px;
-            border:none;
-            border-radius:8px;
-            outline:none;
-            font-size:16px;
+        .search-overlay.open {
+            display: flex;
         }
         .close-btn {
-            margin-left:15px;
-            cursor:pointer;
-            font-size:20px;
-            color:white;
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-size: 28px;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+            transition: color 0.15s;
         }
-        @keyframes slideDown {
-            from { transform: translateY(-20px); opacity:0; }
-            to { transform: translateY(0); opacity:1; }
+        .close-btn:hover {
+            color: white;
+            transform: none;
         }
+
+        a, button {
+            transition: all 0.18s ease;
+        }
+        .nav-link:hover,
+        .btn-hover:hover {
+            transform: translateY(-1px);
+        }
+
+        /* ── KEYFRAMES — deduplicated, single definition each ── */
+        @keyframes pageFade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        @keyframes slideDownNav {
+            from { transform: translateY(-24px); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+
         @keyframes fadeIn {
-            from { opacity:0; }
-            to { opacity:1; }
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
-        </style>
-    </head>
-    <body>
-        {% include "components/navbar.html" %}
-        {% include "components/search_overlay.html" %}
-        <div class="main">
+
+        @keyframes slideDown {
+            from { transform: translateY(-16px); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.96); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--surface-2); }
+        ::-webkit-scrollbar-thumb { background: #c1c9d6; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9aa5b4; }
+
+        ::selection { background: #bfdbfe; color: var(--ink); }
+    </style>
+</head>
+<body>
+
+    {% include "components/navbar.html" %}
+    {% include "components/search_overlay.html" %}
+
+    <div class="main">
+        <div id="appContent">
             {% block content %}{% endblock %}
         </div>
-        <script>
-            window.caseData = {{ caseData | tojson | safe }};
-        </script>
-        <script>
-            const dropdown = document.getElementById("userDropdown");
+    </div>
+
+    {% block footer %}{% endblock %}
+
+    <div id="caseDataStore"
+         data-cases="{{ caseData | tojson | forceescape }}"
+         style="display:none"></div>
+
+    <script>
+        try {
+            const raw = document.getElementById("caseDataStore")
+                            .getAttribute("data-cases");
+            window.caseData = JSON.parse(raw);
+        } catch(e) {
+            window.caseData = [];
+        }
+    </script>
+
+    <script>
+        const dropdown = document.getElementById("userDropdown");
+        if (dropdown) {
             const menu = dropdown.querySelector(".dropdown-content");
-            dropdown.addEventListener("click", function(e) {
-                e.stopPropagation();
-                menu.style.display = menu.style.display === "block" ? "none" : "block";
+            if (menu) {
+                dropdown.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    menu.style.display = menu.style.display === "block" ? "none" : "block";
+                });
+                document.addEventListener("click", function() {
+                    menu.style.display = "none";
+                });
+            }
+        }
+    </script>
+
+    <script>
+       
+        document.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", function(e) {
+                const href = this.getAttribute("href");
+
+                if (
+                    !href ||
+                    href.startsWith("#") ||
+                    href.startsWith("mailto:") ||
+                    href.startsWith("tel:") ||
+                    href.startsWith("javascript:") ||
+                    this.target === "_blank" ||
+                    this.hasAttribute("download") ||
+                    (this.hostname && this.hostname !== window.location.hostname)
+                ) return;
+
+                e.preventDefault();
+                document.getElementById("appContent").classList.add("fade-out");
+                setTimeout(() => { window.location.href = href; }, 280);
             });
-            document.addEventListener("click", function() {
-                menu.style.display = "none";
+        });
+    </script>
+
+    <script>
+        // ── SEARCH OVERLAY OPEN/CLOSE ──
+        // Triggered by navbar search button with id="searchToggleBtn"
+        const searchOverlay = document.querySelector(".search-overlay");
+        const searchToggle  = document.getElementById("searchToggleBtn");
+        const closeBtn      = document.querySelector(".close-btn");
+
+        if (searchToggle && searchOverlay) {
+            searchToggle.addEventListener("click", () => {
+                searchOverlay.classList.add("open");
+                const inp = searchOverlay.querySelector("input");
+                if (inp) setTimeout(() => inp.focus(), 100);
             });
-        </script>
-    </body>
+        }
+
+        if (closeBtn && searchOverlay) {
+            closeBtn.addEventListener("click", () => {
+                searchOverlay.classList.remove("open");
+            });
+        }
+
+        // Close on Escape key
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && searchOverlay) {
+                searchOverlay.classList.remove("open");
+            }
+        });
+
+        // Close on backdrop click
+        if (searchOverlay) {
+            searchOverlay.addEventListener("click", (e) => {
+                if (e.target === searchOverlay) {
+                    searchOverlay.classList.remove("open");
+                }
+            });
+        }
+    </script>
+
+</body>
 </html>

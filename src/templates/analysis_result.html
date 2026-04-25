@@ -1,297 +1,1011 @@
 {% extends "home.html" %}
 {% block content %}
-<style>
-    .result-container {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    }
-    .badge {
-        display: inline-block;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-    .civil { background: #e6f4ea; color: #1e7e34; }
-    .criminal { background: #fdecea; color: #b02a37; }
-    .constitutional { background: #fff8e1; color: #b58900; }
-    .administrative { background: #e7f1ff; color: #0d6efd; }
-    .section-title {
-        margin-top: 25px;
-        margin-bottom: 10px;
-        font-size: 18px;
-        font-weight: bold;
-        border-left: 4px solid #4a90e2;
-        padding-left: 10px;
-    }
-    .sub-card {
-        background: #f9fafc;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        border: 1px solid #eee;
-    }
-    .confidence-box {
-        background: #f1f8ff;
-        padding: 15px;
-        border-radius: 8px;
-        font-weight: 600;
-        margin-bottom: 20px;
-    }
-    .explain-box {
-        background: #fff5e6;
-        padding: 15px;
-        border-radius: 8px;
-        border-left: 4px solid #ff9800;
-        margin-top: 20px;
-    }
-</style>
-<div class="result-container">
-    <div class="badge" style="background:#eef3ff;color:#2c3e50;">
-        {{ main_category }}
-    </div>
-    <h3 style="margin-bottom:15px;">
-        Case Name: {{ case_name if case_name != "Unknown Case" else "Case Title Not Found" }}
-    </h3>
-    {% if petitioner and respondent %}
-    <div class="sub-card">
-        {% if petitioner %}
-        <p><b>Petitioner:</b> {{ petitioner }}</p>
-        {% endif %}
 
-        {% if respondent %}
-        <p><b>Respondent:</b> {{ respondent }}</p>
-        {% endif %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ink:       #0f1923;
+    --ink-soft:  #4a5568;
+    --ink-muted: #8a96a3;
+    --surface:   #ffffff;
+    --surface-2: #f7f8fa;
+    --surface-3: #eef1f6;
+    --accent:    #1a56db;
+    --accent-2:  #0e3fa3;
+    --gold:      #b7860b;
+    --gold-bg:   #fdf8ec;
+    --danger:    #c0392b;
+    --danger-bg: #fdf2f2;
+    --success:   #1a7a4a;
+    --success-bg:#f0faf5;
+    --warn:      #b45309;
+    --warn-bg:   #fffbeb;
+    --border:    #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(15,25,35,0.06), 0 1px 2px rgba(15,25,35,0.04);
+    --shadow-md: 0 4px 16px rgba(15,25,35,0.08), 0 2px 6px rgba(15,25,35,0.04);
+    --shadow-lg: 0 12px 40px rgba(15,25,35,0.10), 0 4px 12px rgba(15,25,35,0.05);
+    --radius:    12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { font-family: 'DM Sans', sans-serif; color: var(--ink); background: #f0f3f8; }
+
+  .ar-page {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .ar-hero {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    padding: 32px 36px 28px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ar-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent) 0%, #5b8dee 50%, var(--accent-2) 100%);
+  }
+
+  .ar-hero-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .ar-domain-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eef3ff;
+    color: var(--accent);
+    border: 1px solid #c7d9ff;
+    border-radius: 24px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .ar-domain-badge svg { width: 14px; height: 14px; }
+
+  .ar-confidence {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ar-confidence-label {
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .ar-confidence-bar-wrap {
+    width: 120px;
+    height: 6px;
+    background: var(--surface-3);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .ar-confidence-bar {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #1a56db, #5b8dee);
+    transition: width 1s ease;
+  }
+  .ar-confidence-pct {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 34px;
+  }
+
+  .ar-case-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 6px;
+  }
+
+  .ar-parties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .ar-party-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  .ar-party-chip b { color: var(--ink-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .ar-party-chip span { color: var(--ink); font-weight: 500; }
+
+  .ar-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .ar-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .ar-meta-chip svg { width: 12px; height: 12px; color: var(--ink-muted); }
+
+  .ar-decision {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    font-weight: 600;
+    font-size: 15px;
+    border: 1px solid;
+  }
+  .ar-decision.positive  { background: var(--success-bg); color: var(--success); border-color: #b7e4ce; }
+  .ar-decision.negative  { background: var(--danger-bg);  color: var(--danger);  border-color: #f5c6c2; }
+  .ar-decision.neutral   { background: var(--surface-2);  color: var(--ink-soft); border-color: var(--border); }
+  .ar-decision svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  .ar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 700px) { .ar-grid { grid-template-columns: 1fr; } }
+
+  .ar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .ar-card-full { grid-column: 1 / -1; }
+
+  .ar-card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .ar-card-head svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+  .ar-card-head h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); }
+
+  .ar-card-body { padding: 18px 20px; }
+
+  .ar-summary-text {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+  }
+
+  .ar-nature-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    border-left: 3px solid var(--accent);
+    padding-left: 14px;
+  }
+
+  .ar-issue {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    transition: box-shadow 0.2s;
+  }
+  .ar-issue:last-child { margin-bottom: 0; }
+  .ar-issue:hover { box-shadow: var(--shadow-md); }
+
+  .ar-issue-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    cursor: pointer;
+    gap: 10px;
+  }
+  .ar-issue-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ar-issue-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
+  }
+  .ar-issue-badges { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  .sev-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sev-high   { background: #ffe4e4; color: var(--danger); }
+  .sev-medium { background: #fff4d6; color: var(--warn); }
+  .sev-low    { background: #e4f5eb; color: var(--success); }
+
+  .ar-issue-body {
+    padding: 14px 16px;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+  .ar-issue-body.open { display: block; }
+  .ar-issue-law {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #eef3ff;
+    color: var(--accent);
+    border-radius: 5px;
+    padding: 3px 9px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .ar-issue-explanation {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+
+  .ar-tag-list { display: flex; flex-wrap: wrap; gap: 7px; }
+  .ar-tag {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 11px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    transition: background 0.15s;
+  }
+  .ar-tag:hover { background: #eef3ff; color: var(--accent); border-color: #c7d9ff; }
+  .ar-tag.law-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: #eef3ff;
+    color: var(--accent);
+    border-color: #c7d9ff;
+  }
+
+  .ar-sec-exp {
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+  }
+  .ar-sec-exp:last-child { border-bottom: none; padding-bottom: 0; }
+  .ar-sec-exp-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    background: #eef3ff;
+    border-radius: 4px;
+    padding: 2px 8px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .ar-sec-exp-text {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    white-space: pre-wrap;
+  }
+
+  .ar-timeline { position: relative; padding-left: 24px; }
+  .ar-timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), #c7d9ff);
+  }
+  .ar-tl-item {
+    position: relative;
+    margin-bottom: 16px;
+    padding-left: 16px;
+  }
+  .ar-tl-item:last-child { margin-bottom: 0; }
+  .ar-tl-item::before {
+    content: '';
+    position: absolute;
+    left: -17px; top: 5px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  .ar-tl-key { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); margin-bottom: 2px; }
+  .ar-tl-val { font-size: 13.5px; color: var(--ink); font-weight: 500; }
+
+  .ar-entity-group { margin-bottom: 14px; }
+  .ar-entity-group:last-child { margin-bottom: 0; }
+  .ar-entity-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); margin-bottom: 8px; }
+
+  .ar-prose {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    white-space: pre-wrap;
+  }
+
+  .ar-citation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .ar-citation:last-child { border-bottom: none; }
+  .ar-citation::before {
+    content: '§';
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .ar-similar {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: var(--surface);
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .ar-similar:last-child { margin-bottom: 0; }
+  .ar-similar:hover { box-shadow: var(--shadow-md); border-color: #c7d9ff; }
+  .ar-similar-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .ar-similar-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+  .ar-sim-score {
+    background: #eef3ff;
+    color: var(--accent);
+    border: 1px solid #c7d9ff;
+    border-radius: 6px;
+    padding: 3px 9px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .ar-similar-summary { font-size: 13px; color: var(--ink-muted); line-height: 1.6; margin-bottom: 8px; }
+  .ar-similar-cat { font-size: 11px; color: var(--ink-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .ar-explain-box {
+    background: var(--gold-bg);
+    border: 1px solid #e8d48b;
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: #5a4000;
+  }
+  .ar-keywords { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+  .ar-keyword {
+    background: #fef9c3;
+    border: 1px solid #e8d48b;
+    color: #7a5500;
+    padding: 4px 11px;
+    border-radius: 5px;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  .ar-ask-wrap {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .ar-ask-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .ar-ask-input:focus { border-color: var(--accent); }
+  .ar-ask-btn {
+    padding: 12px 22px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .ar-ask-btn:hover { background: var(--accent-2); }
+  .ar-ask-btn:active { transform: scale(0.97); }
+  .ar-ask-btn.loading { opacity: 0.7; pointer-events: none; }
+
+  .ar-answer-box {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    display: none;
+    white-space: pre-wrap;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .ar-section-title {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-muted);
+    margin: 32px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ar-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .ar-amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--success);
+    background: var(--success-bg);
+    border: 1px solid #b7e4ce;
+    border-radius: 8px;
+    padding: 8px 16px;
+    display: inline-block;
+    margin: 4px;
+  }
+
+  .ar-date-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    color: var(--ink-soft);
+  }
+  .ar-date-item:last-child { border-bottom: none; }
+  .ar-date-item svg { width: 14px; height: 14px; color: var(--accent); flex-shrink: 0; }
+
+  .ar-chevron {
+    width: 16px; height: 16px;
+    transition: transform 0.2s;
+    color: var(--ink-muted);
+    flex-shrink: 0;
+  }
+  .ar-chevron.open { transform: rotate(180deg); }
+</style>
+
+<div class="ar-page">
+
+  {# ── HERO ── #}
+  <div class="ar-hero">
+    <div class="ar-hero-top">
+      <div class="ar-domain-badge">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        {{ main_category }}
+      </div>
+      <div class="ar-confidence">
+        <span class="ar-confidence-label">AI Confidence</span>
+        <div class="ar-confidence-bar-wrap">
+          <div class="ar-confidence-bar" id="confBar" style="width:0%"></div>
+        </div>
+        <span class="ar-confidence-pct">{{ confidence }}%</span>
+      </div>
+    </div>
+
+    <h1 class="ar-case-title">
+      {% if case_name and case_name != "Unknown Case" %}
+        {{ case_name }}
+      {% else %}
+        Case Title Not Found
+      {% endif %}
+    </h1>
+
+    {% if petitioner or respondent %}
+    <div class="ar-parties">
+      {% if petitioner %}
+      <div class="ar-party-chip">
+        <b>Petitioner</b>
+        <span>{{ petitioner }}</span>
+      </div>
+      {% endif %}
+      {% if respondent %}
+      <div class="ar-party-chip">
+        <b>Respondent</b>
+        <span>{{ respondent }}</span>
+      </div>
+      {% endif %}
     </div>
     {% endif %}
-    {% if entities %}
-    
-    <div class="section-title">Named Entities Detected</div>
-    {% if entities.persons %}
-    <div class="sub-card">
-        <b>Persons</b>
-        <ul>
-            {% for p in entities.persons %}
-            <li>{{ p }}</li>
-            {% endfor %}
-        </ul>
+
+    <div class="ar-meta-row">
+      {% if court and court != "Court Not Identified" %}
+      <span class="ar-meta-chip">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="12" height="8" rx="1"/><path d="M1 6l7-4 7 4"/></svg>
+        {{ court }}
+      </span>
+      {% endif %}
+      {% if judge and judge not in ["Judge Not Found", "Judge Not Identified"] %}
+      <span class="ar-meta-chip">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+        {{ judge }}
+      </span>
+      {% endif %}
+      {% if dates %}
+      <span class="ar-meta-chip">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 1v3M11 1v3M2 7h12"/></svg>
+        {{ dates[0] }}
+      </span>
+      {% endif %}
+      {% if source %}
+      <span class="ar-meta-chip">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2h8l2 2v10H2V2z"/><path d="M5 6h6M5 9h6M5 12h4"/></svg>
+        {{ source }}
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── COURT DECISION BANNER ── #}
+  {% if court_decision and court_decision not in ["Outcome Not Detected", "Not applicable (statutory document)"] %}
+  {% set dec_lower = court_decision.lower() %}
+  {% if "allowed" in dec_lower or "granted" in dec_lower or "acquitted" in dec_lower or "set aside" in dec_lower %}
+  <div class="ar-decision positive">
+    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+    Court Decision: {{ court_decision }}
+  </div>
+  {% elif "dismissed" in dec_lower or "rejected" in dec_lower or "convicted" in dec_lower or "upheld" in dec_lower %}
+  <div class="ar-decision negative">
+    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+    Court Decision: {{ court_decision }}
+  </div>
+  {% else %}
+  <div class="ar-decision neutral">
+    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+    Court Decision: {{ court_decision }}
+  </div>
+  {% endif %}
+  {% endif %}
+
+  {# ── SUMMARY + NATURE ── #}
+  {% if summary or nature %}
+  <div class="ar-grid">
+    {% if summary %}
+    <div class="ar-card {% if not nature %}ar-card-full{% endif %}">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4h12M2 8h10M2 12h8"/></svg>
+        <h3>Case Summary</h3>
+      </div>
+      <div class="ar-card-body">
+        <p class="ar-summary-text">{{ summary }}</p>
+      </div>
     </div>
     {% endif %}
-    {% if entities.organizations %}
-    <div class="sub-card">
-        <b>Organizations</b>
-        <ul>
-            {% for o in entities.organizations %}
-            <li>{{ o }}</li>
-            {% endfor %}
-        </ul>
+    {% if nature %}
+    <div class="ar-card">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4l3 3"/></svg>
+        <h3>Nature of Dispute</h3>
+      </div>
+      <div class="ar-card-body">
+        <p class="ar-nature-text">{{ nature }}</p>
+      </div>
     </div>
     {% endif %}
-    {% if entities.dates %}
-    <div class="sub-card">
-        <b>Entity Dates</b>
-        <ul>
-            {% for d in entities.dates %}
-            <li>{{ d }}</li>
-            {% endfor %}
-        </ul>
+  </div>
+  {% endif %}
+
+  {# ── LEGAL ISSUES (SUBDIVISIONS) ── #}
+  {% if subdivisions and subdivisions|length > 0 %}
+  <div class="ar-section-title">Detected Legal Issues</div>
+  <div class="ar-card ar-card-full" style="margin-bottom:20px;">
+    <div class="ar-card-body">
+      {% for sub in subdivisions %}
+      <div class="ar-issue">
+        <div class="ar-issue-head" onclick="toggleIssue(this)">
+          <div class="ar-issue-num">{{ loop.index }}</div>
+          <span class="ar-issue-title">{{ sub.title }}</span>
+          <div class="ar-issue-badges">
+            {% if sub.severity %}
+            <span class="sev-badge sev-{{ sub.severity | lower }}">{{ sub.severity }}</span>
+            {% endif %}
+            <svg class="ar-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+        </div>
+        <div class="ar-issue-body">
+          {% if sub.law and sub.law != "Not specified in document" %}
+          <div class="ar-issue-law">⚖ {{ sub.law }}</div>
+          {% endif %}
+          <p class="ar-issue-explanation">{{ sub.explanation }}</p>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-    {% endif %}
-    {% endif %}
-    
-    {% if dates %}
-    <div class="section-title">Important Dates</div>
-    <div class="sub-card">
-        <ul>
-            {% for d in dates %}
-            <li>{{ d }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-    {% if timeline %}
-    <div class="section-title">Case Timeline</div>
-    <div class="sub-card">
-        <ul>
-            {% for key, value in timeline.items() %}
-            <li><strong>{{ key }}:</strong> {{ value }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
+  </div>
+  {% endif %}
+
+  {# ── ACTS + PROVISIONS ── #}
+  {% if acts or legal_provisions %}
+  <div class="ar-grid">
     {% if acts %}
-    <div class="section-title">Detected Acts</div>
-    <div class="sub-card">
-        <ul>
-            {% for act in acts %}
-            <li>{{ act }}</li>
-            {% endfor %}
-        </ul>
+    <div class="ar-card">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2h8l2 2v10H2V2z"/><path d="M5 7h6M5 10h4"/></svg>
+        <h3>Detected Acts</h3>
+      </div>
+      <div class="ar-card-body">
+        <div class="ar-tag-list">
+          {% for act in acts %}
+          <span class="ar-tag">{{ act }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if legal_provisions and legal_provisions|length > 0 %}
+    <div class="ar-card">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v12M2 8h12"/></svg>
+        <h3>Legal Provisions</h3>
+      </div>
+      <div class="ar-card-body">
+        <div class="ar-tag-list">
+          {% for law in legal_provisions %}
+          <span class="ar-tag law-tag">{{ law }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {# ── SECTION EXPLANATIONS ── #}
+  {% if section_explanations %}
+  <div class="ar-section-title">Legal Section Explanations</div>
+  <div class="ar-card ar-card-full" style="margin-bottom:20px;">
+    <div class="ar-card-body">
+      {% for sec in section_explanations %}
+      <div class="ar-sec-exp">
+        <div class="ar-sec-exp-label">{{ sec.section }}</div>
+        <p class="ar-sec-exp-text">{{ sec.explanation }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# ── RISK + ARGUMENTS ── #}
+  {% if risk_analysis or legal_arguments %}
+  <div class="ar-grid">
+    {% if risk_analysis %}
+    <div class="ar-card">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.6 3.5L8 10l-3.1 1.5.6-3.5L3 5.5l3.5-.5z"/></svg>
+        <h3>Legal Risk Analysis</h3>
+      </div>
+      <div class="ar-card-body">
+        <p class="ar-prose">{{ risk_analysis }}</p>
+      </div>
+    </div>
+    {% endif %}
+    {% if legal_arguments %}
+    <div class="ar-card">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4h12M2 4l3 8M14 4l-3 8M5 12h6"/></svg>
+        <h3>AI Legal Arguments</h3>
+      </div>
+      <div class="ar-card-body">
+        <p class="ar-prose">{{ legal_arguments }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {# ── TIMELINE + AMOUNTS ── #}
+  {% if timeline or amounts %}
+  <div class="ar-grid">
+    {% if timeline %}
+    <div class="ar-card">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        <h3>Case Timeline</h3>
+      </div>
+      <div class="ar-card-body">
+        <div class="ar-timeline">
+          {% for key, value in timeline.items() %}
+          <div class="ar-tl-item">
+            <div class="ar-tl-key">{{ key }}</div>
+            <div class="ar-tl-val">{{ value }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
     </div>
     {% endif %}
     {% if amounts %}
-    <div class="section-title">Amount Involved</div>
-    <div class="sub-card">
-        <ul>
-            {% for amt in amounts %}
-            <li>{{ amt }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-    {% if court or judge %}
-    <div class="sub-card">
-        {% if court and court != "Court Not Identified" %}
-        <p><b>Court:</b> {{ court }}</p>
-        {% endif %}
-        {% if judge and judge != "Judge Not Found" %}
-        <p><b>Judge:</b> {{ judge }}</p>
-        {% endif %}
-        {% if dates %}
-        <p><b>Date:</b> {{ dates[0] }}</p>
-        {% endif %}
-    </div>
-    {% endif %}
-    <div class="confidence-box">
-        AI Confidence Score: {{ confidence }}%
-    </div>
-    {% if nature %}
-        <div class="section-title">Nature of Dispute</div>
-        <p>{{ nature }}</p>
-    {% endif %}
-    {% if summary %}
-    <div class="section-title">Case Summary</div>
-    <p>{{ summary }}</p>
-    {% endif %}
-
-    {% if risk_analysis %}
-    <div class="section-title">Legal Risk Analysis</div>
-    <div class="sub-card">
-        <p style="white-space: pre-wrap;">{{ risk_analysis }}</p>
-    </div>
-    {% endif %}
-
-    {% if legal_arguments %}
-    <div class="section-title">AI Legal Arguments</div>
-    <div class="sub-card">
-        <pre style="white-space: pre-wrap;">{{ legal_arguments }}</pre>
-    </div>
-    {% endif %}
-
-    {% if legal_provisions and legal_provisions|length > 0 %}
-    <div class="section-title">Legal Provisions Identified</div>
-    <ul>
-        {% for law in legal_provisions %}
-        <li>{{ law }}</li>
+    <div class="ar-card">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v12M5 5h6a2 2 0 010 4H5"/></svg>
+        <h3>Amounts Involved</h3>
+      </div>
+      <div class="ar-card-body">
+        {% for amt in amounts %}
+        <span class="ar-amount">{{ amt }}</span>
         {% endfor %}
-    </ul>
-    {% endif %}
-    {% if court_decision %}
-    <div class="section-title">Court Decision</div>
-    <p>
-        <b>{{ court_decision }}</b>
-        <br>
-        <span style="color:gray">Confidence: {{ outcome_confidence }}</span>
-    </p>
-    {% endif %}
-    {% if subdivisions and subdivisions|length > 0 %}
-    <div class="section-title">Subdivisions</div>
-    <div class="sub-card">
-        <ul>
-            {% for sub in subdivisions %}
-            <li>{{ sub.title }}</li>
-            {% endfor %}
-        </ul>
+      </div>
     </div>
     {% endif %}
-    <div class="section-title">Detected Legal Issues</div>
-    {% for sub in subdivisions %}
-    <div class="sub-card">
-        <h4>{{ loop.index }}️⃣ {{ sub.title }}</h4>
-        <p><b>Law:</b> {{ sub.law }}</p>
-        <p><b>Severity:</b> {{ sub.severity }}</p>
-        <p><b>Legal Analysis:</b><br>{{ sub.explanation }}</p>
-    </div>
-    {% endfor %}
-    {% if section_explanations %}
-    <div class="section-title">Legal Section Explanation</div>
-    {% for sec in section_explanations %}
-    <div class="sub-card">
-        <h4>{{ sec.section }}</h4>
-        <p>{{ sec.explanation }}</p>
-    </div>
-    {% endfor %}
-    {% endif %}
-    <div class="section-title">AI Legal Reasoning Summary</div>
-    <div class="explain-box">
-        This case is classified as <b>{{ main_category }}</b> based strictly on the
-        content of the document. Legal provisions are displayed only if they are
-        explicitly mentioned in the case text. If no provisions are listed, the
-        document does not contain explicit statutory references.
-    </div>
-</div>
-{% if citations and citations|length > 0 %}
-<div class="section-title">Case Citations</div>
-<ul>
-    {% for c in citations %}
-    <li>{{ c }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
+  </div>
+  {% endif %}
 
-<h3>Ask Question About This Case</h3>
-<div class="sub-card">
-    <input type="text" id="caseQuestion" 
-    placeholder="Ask something about this case (e.g. What was the dispute?)"
-    style="width:70%;padding:8px;border-radius:6px;border:1px solid #ccc;">
-    <button onclick="askQuestion()" 
-        style="padding:8px 14px;background:#4a90e2;color:white;border:none;border-radius:6px;">
-        Ask
-    </button>
-</div>
-<div id="answerBox" class="sub-card"></div>
+  {# ── DATES + ENTITIES ── #}
+  {% if dates or entities %}
+  <div class="ar-grid">
+    {% if dates %}
+    <div class="ar-card">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 1v3M11 1v3M2 7h12"/></svg>
+        <h3>Important Dates</h3>
+      </div>
+      <div class="ar-card-body">
+        {% for d in dates %}
+        <div class="ar-date-item">
+          <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+          {{ d }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% if entities and (entities.persons or entities.organizations or entities.dates) %}
+    <div class="ar-card">
+      <div class="ar-card-head">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="5" r="3"/><path d="M1 14c0-2.8 2.2-5 5-5M10 8l5 3-5 3"/></svg>
+        <h3>Named Entities</h3>
+      </div>
+      <div class="ar-card-body">
+        {% if entities.persons %}
+        <div class="ar-entity-group">
+          <div class="ar-entity-label">Persons</div>
+          <div class="ar-tag-list">
+            {% for p in entities.persons %}<span class="ar-tag">{{ p }}</span>{% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        {% if entities.organizations %}
+        <div class="ar-entity-group">
+          <div class="ar-entity-label">Organizations</div>
+          <div class="ar-tag-list">
+            {% for o in entities.organizations %}<span class="ar-tag">{{ o }}</span>{% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        {% if entities.dates %}
+        <div class="ar-entity-group">
+          <div class="ar-entity-label">Entity Dates</div>
+          <div class="ar-tag-list">
+            {% for d in entities.dates %}<span class="ar-tag">{{ d }}</span>{% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
 
-{% if similar_cases %}
-<h3>Similar Cases</h3>
-{% if similar_cases and similar_cases|length > 0 %}
+  {# ── CITATIONS ── #}
+  {% if citations and citations|length > 0 %}
+  <div class="ar-section-title">Case Citations</div>
+  <div class="ar-card ar-card-full" style="margin-bottom:20px;">
+    <div class="ar-card-body">
+      {% for c in citations %}
+      <div class="ar-citation">{{ c }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# ── CLASSIFICATION EXPLANATION ── #}
+  <div class="ar-section-title">Classification Reasoning</div>
+  <div style="margin-bottom:20px;">
+    <div class="ar-explain-box">{{ explanation }}</div>
+    {% if keywords %}
+    <div class="ar-keywords">
+      {% for word in keywords %}
+      <span class="ar-keyword">{{ word }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {# ── ASK QUESTION ── #}
+  <div class="ar-section-title">Ask About This Case</div>
+  <div class="ar-card ar-card-full" style="margin-bottom:20px;">
+    <div class="ar-card-body">
+      <div class="ar-ask-wrap">
+        <input
+          type="text"
+          id="caseQuestion"
+          class="ar-ask-input"
+          placeholder="e.g. What are the grounds for appeal? What law applies here?"
+          onkeydown="if(event.key==='Enter') askQuestion()"
+        />
+        <button class="ar-ask-btn" id="askBtn" onclick="askQuestion()">Ask AI</button>
+      </div>
+      <div id="answerBox" class="ar-answer-box"></div>
+    </div>
+  </div>
+
+  {# ── SIMILAR CASES ── #}
+  <div class="ar-section-title">Similar Cases</div>
+  {% if similar_cases %}
     {% for case in similar_cases %}
-    <div class="case">
-        <p><b>{{ case.case_name }}</b></p>
-        <p>Category: {{ case.main_category }}</p>
-        <p>Similarity: {{ case.similarity }}%</p>
+    <div class="ar-similar">
+      <div class="ar-similar-top">
+        <div class="ar-similar-title">{{ case.title }}</div>
+        <span class="ar-sim-score">{{ case.similarity }}%</span>
+      </div>
+      <p class="ar-similar-summary">
+        {% if case.summary %}
+          {{ case.summary[:220] }}{% if case.summary|length > 220 %}…{% endif %}
+        {% endif %}
+      </p>
+      <div class="ar-similar-cat">{{ case.main_category }}</div>
     </div>
     {% endfor %}
-{% else %}
-    <p>No similar cases found in this category.</p>
-{% endif %}
-{% endif %}
+  {% else %}
+  <div class="ar-card" style="margin-bottom:20px;">
+    <div class="ar-card-body" style="text-align:center;color:var(--ink-muted);padding:32px;">
+      <svg style="width:32px;height:32px;margin-bottom:10px;opacity:0.4;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <div style="font-size:14px;">No similar cases found in the database.</div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
 <script>
-function askQuestion(){
+  // Animate confidence bar on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const bar = document.getElementById('confBar');
+      if (bar) bar.style.width = '{{ confidence }}%';
+    }, 300);
+  });
 
-    let question = document.getElementById("caseQuestion").value;
-
-    if(!question){
-        alert("Please enter a question");
-        return;
+  // Toggle issue accordion
+  function toggleIssue(head) {
+    const body = head.nextElementSibling;
+    const chevron = head.querySelector('.ar-chevron');
+    const isOpen = body.classList.contains('open');
+    // Close all others
+    document.querySelectorAll('.ar-issue-body.open').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.ar-chevron.open').forEach(c => c.classList.remove('open'));
+    if (!isOpen) {
+      body.classList.add('open');
+      chevron.classList.add('open');
     }
+  }
 
-    document.getElementById("answerBox").innerText = "Thinking...";
+  // Open first issue by default
+  document.addEventListener('DOMContentLoaded', () => {
+    const firstHead = document.querySelector('.ar-issue-head');
+    if (firstHead) toggleIssue(firstHead);
+  });
 
-    let caseText = `{{ summary }} {{ nature }} {{ legal_provisions | join(" ") }}`;
+  // Ask question
+  function askQuestion() {
+    const question = document.getElementById("caseQuestion").value.trim();
+    if (!question) { alert("Please enter a question"); return; }
+
+    const btn = document.getElementById("askBtn");
+    const box = document.getElementById("answerBox");
+    btn.classList.add('loading');
+    btn.textContent = 'Thinking…';
+    box.style.display = 'block';
+    box.textContent = 'Analysing your question…';
+
+    const caseText = `{{ summary | replace('"', '') | replace("'", '') }} {{ nature | replace('"', '') | replace("'", '') }} {{ legal_provisions | join(' ') }}`;
 
     fetch("/ask_case_question", {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: "question=" + encodeURIComponent(question) +
-              "&case_text=" + encodeURIComponent(caseText)
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "question=" + encodeURIComponent(question) + "&case_text=" + encodeURIComponent(caseText)
     })
     .then(res => res.json())
     .then(data => {
-        document.getElementById("answerBox").innerText = data.answer;
+      box.textContent = data.answer;
+      btn.classList.remove('loading');
+      btn.textContent = 'Ask AI';
+    })
+    .catch(() => {
+      box.textContent = 'Error getting answer. Please try again.';
+      btn.classList.remove('loading');
+      btn.textContent = 'Ask AI';
     });
-}
+  }
 </script>
+
 {% endblock %}

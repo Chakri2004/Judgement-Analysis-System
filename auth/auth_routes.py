@@ -15,26 +15,6 @@ class User(UserMixin):
     def get_id(self):
         return self.id
 
-@auth.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        existing_user = users_collection.find_one({"email": email})
-        if existing_user:
-            flash("Email already registered!", "danger")
-            return redirect(url_for("auth.register"))
-        hashed_password = generate_password_hash(password)
-        users_collection.insert_one({
-            "name": name,
-            "email": email,
-            "password": hashed_password
-        })
-        flash("Registration successful! Please login.", "success")
-        return redirect(url_for("auth.login"))
-    return render_template("register.html")
-
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -43,11 +23,33 @@ def login():
         user = users_collection.find_one({"email": email})
         if user and check_password_hash(user["password"], password):
             login_user(User(user))
-            return redirect(url_for("home"))
+            next_page = request.args.get("next")
+            return redirect(next_page or url_for("home"))
         else:
             flash("Invalid email or password", "danger")
-            return render_template("login.html")
-    return render_template("login.html")
+
+    return render_template("auth.html", mode="login")
+
+@auth.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        existing_user = users_collection.find_one({"email": email})
+        if existing_user:
+            flash("Email already registered!", "danger")
+            return redirect(url_for("auth.register"))
+
+        hashed_password = generate_password_hash(password)
+        users_collection.insert_one({
+            "email": email,
+            "password": hashed_password
+        })
+
+        flash("Registration successful! Please login.", "success")
+        return redirect(url_for("auth.login"))
+
+    return render_template("auth.html", mode="signup")
 
 @auth.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
@@ -59,9 +61,11 @@ def forgot_password():
         if not user:
             flash("Email not registered!", "danger")
             return redirect(url_for("auth.forgot_password"))
+        
         if new_password != confirm_password:
             flash("Passwords do not match!", "danger")
             return redirect(url_for("auth.forgot_password"))
+        
         from werkzeug.security import generate_password_hash
         hashed_password = generate_password_hash(new_password)
         users_collection.update_one(
@@ -70,7 +74,7 @@ def forgot_password():
         )
         flash("Password reset successfully! Please login.", "success")
         return redirect(url_for("auth.login"))
-    return render_template("forgot_password.html")
+    return render_template("auth.html", mode="forgot")
 
 @auth.route("/logout")
 @login_required

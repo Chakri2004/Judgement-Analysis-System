@@ -1,0 +1,108 @@
+{% extends "home.html" %}
+{% block content %}
+<style>
+.container{
+    max-width:950px;
+    margin:auto;
+    padding:70px 20px;
+    line-height:1.9;
+}
+h1{
+    font-size:30px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+.meta{
+    color:#6b7280;
+    font-size:14px;
+    margin-bottom:40px;
+}
+.section{
+    margin-top:40px;
+}
+.section h2{
+    font-size:18px;
+    font-weight:600;
+    border-left:4px solid #111;
+    padding-left:10px;
+    margin-bottom:12px;
+}
+.text{
+    color:#374151;
+    font-size:15px;
+}
+.highlight{
+    background:#f9fafc;
+    padding:14px;
+    border-left:4px solid #2563eb;
+    margin-top:10px;
+    font-size:14px;
+}
+.note{
+    margin-top:25px;
+    font-size:13px;
+    color:#6b7280;
+}
+</style>
+<div class="container">
+    <h1>Case Understanding</h1>
+    <div class="meta">
+        <strong>Case:</strong> {{ case_name or "Unknown Case" }} <br>
+        <strong>Court:</strong> {{ court or "Not Identified" }} <br>
+        <strong>Judge:</strong> {{ judge or "Not Identified" }}
+    </div>
+
+    <div class="section">
+        <h2>Background</h2>
+        <div class="text">
+            {{ text[:600] if text else "The factual background of the case will be displayed here once analysis is complete." }}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Key Legal Issues</h2>
+        <div class="text">
+            {% if issues %}
+                <ul>
+                {% for issue in issues %}
+                    <li>{{ issue }}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                The system identifies the primary legal questions addressed by the court, including disputes related to statutory interpretation, liability, and procedural validity.
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Relevant Legal Provisions</h2>
+        <div class="text">
+            {% if sections %}
+                {% for s in sections %}
+                    <div class="highlight">{{ s }}</div>
+                {% endfor %}
+            {% else %}
+                Relevant statutory provisions such as sections under IPC, CrPC, or other applicable laws will be identified here.
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Judicial Reasoning</h2>
+        <div class="text">
+            The court's reasoning is derived from analysis of facts, interpretation of legal provisions, and application of precedents. This section reflects how the court arrived at its conclusion based on arguments and evidence.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Final Decision</h2>
+        <div class="highlight">
+            {{ decision or "The final outcome of the case will be identified based on judicial findings." }}
+        </div>
+    </div>
+
+    <div class="note">
+        This analysis is generated using AI models and is intended for informational purposes only.
+    </div>
+</div>
+{% endblock %}

@@ -1,157 +1,161 @@
-<div id="searchOverlay" class="search-overlay" onclick="closeSearchOutside(event)">
-    <div class="search-box" onclick="event.stopPropagation();">
-        <div class="input-wrapper">
-            <input type="text"
-                   id="navbarSearch"
-                   placeholder="Search..."
-                   onkeyup="liveSearch()"
-                   autocomplete="off">
-            <button type="button"
-                    class="clear-btn"
-                    onclick="clearSearch()">
-                Cancel
-            </button>
-        </div>
-        <div id="searchSuggestions" class="suggestions"></div>
+<div id="searchOverlay" class="search-overlay">
+
+    <!-- TOP SEARCH BAR -->
+    <div class="search-top">
+        <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search"
+            onkeyup="handleSearch()"
+        >
+        <div class="close-btn" onclick="closeSearch()">x</div>
     </div>
+
+    <!-- RESULTS -->
+    <div id="searchResults" class="search-results"></div>
 </div>
 <style>
 .search-overlay {
     position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(14px);
+    top: 122px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 80px);
+    background: rgb(67, 65, 65);
     display: none;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 120px;
-    z-index: 3000;
-}
-.search-box {
-    width: 650px;
-    max-width: 100%;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(20px);
-    padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0 25px 70px rgba(0,0,0,0.45);
-    display: flex;
     flex-direction: column;
+    z-index: 9999;
 }
-.input-wrapper {
-    position: relative;
-    width: 100%;
+.search-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid white;
 }
-.input-wrapper input {
+#searchInput {
     width: 100%;
-    padding: 14px 85px 14px 18px;
+    max-width: 700px;
+    padding: 14px 20px;
+    border-radius: 30px;
     border: none;
-    border-radius: 12px;
     outline: none;
-    font-size: 16px;
+    font-size: 40px;
+    background: rgb(67, 65, 65);
+    color: white;
 }
-* {
-    box-sizing: border-box;
-}
-.clear-btn {
+.close-btn {
     position: absolute;
-    right: 18px;
-    top: 50%;
+    right: 60px;
+    top: 7%;
     transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    font-size: 14px;
-    font-weight: 500;
-    color: #444;
+    font-size: 80px;
+    font-weight: 100;
+    color: white;
     cursor: pointer;
-    display: none;
-    transition: 0.2s ease;
 }
-.clear-btn:hover {
-    color: black;
-}
-.suggestions {
-    margin-top: 18px;
-    width: 100%;
-    max-height: 280px;
+.search-results {
+    padding: 30px;
     overflow-y: auto;
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
 }
-.suggestion-item {
-    padding: 16px 20px;
+.search-item {
+    background: rgb(67, 65, 65);
+    color: white;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 12px;
     cursor: pointer;
-    transition: background 0.2s ease;
+    font-size: 20px;
 }
-.suggestion-item:hover {
-    background: #f3f3f3;
+.search-item small {
+    font-size: 20px;
+    color: #d1d5db;
+}
+.search-item:hover {
+    background: rgb(67, 65, 65);
 }
 </style>
 <script>
-    window.caseData = {{ caseData | tojson | safe }};
+window.globalSearchData = [
+
+    { title: "Analyze Case", desc: "Upload or enter a case", url: "/analyze" },
+    { title: "Browse Cases", desc: "Search saved cases", url: "/cases" },
+    { title: "Saved Cases", desc: "Bookmarked cases", url: "/bookmarks" },
+    { title: "AI Assistant", desc: "Ask legal questions", url: "/workspace/assistant" },
+
+    { title: "Case Understanding", desc: "Extract key facts", url: "/case-understanding" },
+    { title: "Domain Classification", desc: "Identify legal domains", url: "/domain-classification" },
+    { title: "Smart Summarization", desc: "Generate summaries", url: "/summarization" },
+
+    { title: "Overview", desc: "About platform", url: "/careers" },
+    { title: "How It Works", desc: "System explanation", url: "/how-it-works" },
+    { title: "Support", desc: "Help and FAQ", url: "/help" },
+    { title: "API Access", desc: "Developer API", url: "/api-access" },
+
+    { title: "Privacy Policy", desc: "User data policy", url: "/privacy" },
+    { title: "Terms", desc: "Terms of use", url: "/terms" },
+    { title: "Security", desc: "Data protection", url: "/footer/security" },
+
+    { title: "Workspace", desc: "Main dashboard", url: "/workspace" }
+
+];
 </script>
 <script>
-    function openSearch() {
-        const overlay = document.getElementById("searchOverlay");
-        overlay.style.display = "flex";
-        document.getElementById("navbarSearch").focus();
+function openSearch(){
+    document.getElementById("searchOverlay").style.display = "flex";
+    document.getElementById("searchInput").focus();
+}
+function closeSearch(){
+    document.getElementById("searchOverlay").style.display = "none";
+    document.getElementById("searchResults").innerHTML = "";
+    document.getElementById("searchInput").value = "";
+}
+function handleSearch(){
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    const resultsBox = document.getElementById("searchResults");
+    console.log("Query:", query);
+    console.log("caseData:", window.caseData);
+    if(!query){
+        resultsBox.innerHTML = "";
+        return;
     }
-    function closeSearch() {
-        document.getElementById("searchOverlay").style.display = "none";
-        document.getElementById("searchSuggestions").innerHTML = "";
-        document.getElementById("navbarSearch").value = "";
-        document.querySelector(".clear-btn").style.display = "none";
+    let caseResults = (window.caseData || []).filter(doc =>
+        (doc.title || "").toLowerCase().includes(query) ||
+        (doc.main_category || "").toLowerCase().includes(query) ||
+        (doc.status || "").toLowerCase().includes(query) ||
+        (doc.nature_of_dispute || "").toLowerCase().includes(query) ||
+        (doc.summary || "").toLowerCase().includes(query)
+    ).map(doc => ({
+        title: doc.title || "Untitled Case",
+        desc: doc.main_category || "Case",
+        url: "/view/" + doc._id
+    }));
+    let staticResults = (window.globalSearchData || []).filter(item =>
+        (item.title || "").toLowerCase().includes(query) ||
+        (item.desc || "").toLowerCase().includes(query)
+    );
+    let allResults = [...caseResults, ...staticResults];
+    if(allResults.length === 0){
+        resultsBox.innerHTML = `
+            <p style='color:white'>
+            No results found for "<b>${query}</b>"
+            </p>
+        `;
+        return;
     }
-    function closeSearchOutside(event) {
-        if (event.target.id === "searchOverlay") {
-            closeSearch();
-        }
-    }
-    document.addEventListener("keydown", function(e) {
-        if (e.key === "Escape") {
-            closeSearch();
-        }
-    });
-    function clearSearch() {
-        const input = document.getElementById("navbarSearch");
-        const suggestions = document.getElementById("searchSuggestions");
-        const clearBtn = document.querySelector(".clear-btn");
-        input.value = "";
-        suggestions.innerHTML = "";
-        clearBtn.style.display = "none";
-        input.focus();
-    }
-    function liveSearch() {
-        const inputField = document.getElementById("navbarSearch");
-        const input = inputField.value.toLowerCase();
-        const suggestions = document.getElementById("searchSuggestions");
-        const clearBtn = document.querySelector(".clear-btn");
-        suggestions.innerHTML = "";
-        if (!window.caseData) return;
-        clearBtn.style.display = input.length > 0 ? "block" : "none";
-        if (input.length === 0) return;
-        const filtered = window.caseData.filter(doc =>
-            (doc.title || "").toLowerCase().includes(input) ||
-            (doc.main_category || "").toLowerCase().includes(input) ||
-            (doc.status || "").toLowerCase().includes(input)
-        );
-        filtered.slice(0,6).forEach(doc => {
-            const div = document.createElement("div");
-            div.classList.add("suggestion-item");
-            div.innerHTML = `
-                <strong>${doc.title}</strong>
-                <br>
-                <small>${doc.main_category} • ${doc.status}</small>
-            `;
-            div.onclick = () => {
-                if(doc.type === "note"){
-                    window.location.href = "/view_note/" + doc._id;
-                }else{
-                    window.location.href = "/view/" + doc._id;
-                }
-            };
-            suggestions.appendChild(div);
-        });
-    }
+    resultsBox.innerHTML = allResults.map(item => `
+        <div class="search-item" onclick="goToPage('${item.url}')">
+            <strong>${highlight(item.title, query)}</strong><br>
+            <small>${highlight(item.desc, query)}</small>
+        </div>
+    `).join("");
+}
+function goToPage(url){
+    window.location.href = url;
+}
+function highlight(text, query){
+    if(!text) return "";
+    const regex = new RegExp(`(${query})`, "gi");
+    return text.replace(regex, "<span style='color:#60a5fa'>$1</span>");
+}
 </script>

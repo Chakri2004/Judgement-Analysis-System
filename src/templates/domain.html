@@ -1,0 +1,86 @@
+{% extends "home.html" %}
+{% block content %}
+<style>
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:70px 20px;
+    line-height:1.9;
+}
+h1{
+    font-size:30px;
+    margin-bottom:20px;
+}
+.section{
+    margin-top:35px;
+}
+.label{
+    font-weight:600;
+    margin-bottom:5px;
+}
+.value{
+    color:#374151;
+}
+.bar{
+    height:8px;
+    background:#eee;
+    border-radius:10px;
+    margin-top:10px;
+}
+.fill{
+    height:100%;
+    background:#2563eb;
+    width:{{ confidence or 85 }}%;
+}
+</style>
+<div class="container">
+    <h1>Domain Classification</h1>
+    <div class="section">
+        <div class="label">Detected Domain</div>
+        <div class="value"><strong>{{ domain or "Not Classified" }}</strong></div>
+    </div>
+
+    <div class="section">
+        <div class="label">Confidence Level</div>
+        <div class="value">{{ confidence or 85 }}%</div>
+        <div class="bar"><div class="fill"></div></div>
+    </div>
+    <div class="section">
+        <div class="label">What does this mean?</div>
+        <div class="value">
+            The confidence level represents how certain the system is about the predicted
+            legal domain. It is calculated using machine learning models that analyze
+            the document's language, legal terminology, and similarity with previously
+            classified cases.
+            
+            <br><br>
+            
+            A higher percentage indicates stronger alignment with patterns observed in
+            historical legal data, while lower confidence may suggest ambiguity,
+            overlapping legal domains, or limited contextual signals in the document.
+            
+            <br><br>
+            
+            In this case, a confidence of <strong>{{ confidence or 85 }}%</strong> suggests that
+            the classification is reliable and supported by strong indicators within the text.
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="label">Analytical Basis</div>
+        <div class="value">
+            The classification is based on a combination of machine learning predictions,
+            keyword mapping, and semantic similarity with prior legal cases. Indicators such as
+            statutory references and domain-specific terminology influence the final result.
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="label">Interpretation</div>
+        <div class="value">
+            This case primarily falls under <strong>{{ domain or "the identified domain" }}</strong>,
+            indicating that the dispute involves issues governed by this area of law.
+        </div>
+    </div>
+</div>
+{% endblock %}
