@@ -124,11 +124,14 @@ def retrieve_relevant_laws(query_text, k=10, category=None):
 
         distance = distances[0][i]
         similarity = round(100 / (1 + distance), 2)
+
         if category and case.get("category"):
-            if case.get("category") == category:
-                similarity += 10
-            else:
-                similarity -= 5
+            stored_category = case.get("category", "").lower()
+            query_category = category.lower()
+
+            # Allow partial category matching
+            if query_category not in stored_category:
+                continue
 
         if similarity < 20:
             continue

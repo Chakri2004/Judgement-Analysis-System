@@ -31,7 +31,7 @@ def analyze_case(pdf_path):
     case_text = extract_text_from_pdf(pdf_path)
     case_name = extract_case_name(case_text)
 
-    results = retrieve_relevant_laws(case_text, k=5)
+    results = retrieve_relevant_laws(case_text, k=5, category=domain)
     ipc_sections = detect_ipc_sections(case_text)
     issues = extract_legal_issues(case_text)
 

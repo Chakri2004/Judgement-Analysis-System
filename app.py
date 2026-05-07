@@ -707,10 +707,14 @@ DOMAIN_SUBDIVISIONS = {
 
 SECTION_SUBDIVISION_MAP = {
     "120B": {"title": "Criminal Conspiracy", "explanation": "Agreement between two or more persons to commit an illegal act under Section 120B IPC."},
+    "302": {"title": "Murder", "explanation": "Punishment for murder under Section 302 IPC."},
+    "376": {"title": "Rape Offence", "explanation": "Punishment for rape under Section 376 IPC."},
+    "498A": {"title": "Cruelty Against Married Woman", "explanation": "Cruelty by husband or relatives under Section 498A IPC."},
     "406": {"title": "Criminal Breach of Trust", "explanation": "Misappropriation of property entrusted to a person under Section 406 IPC."},
     "409": {"title": "Breach of Trust by Public Servant", "explanation": "Serious offence where a public servant dishonestly misappropriates entrusted property."},
     "420": {"title": "Cheating and Fraud", "explanation": "Dishonest inducement causing delivery of property under Section 420 IPC."},
     "430": {"title": "Mischief Causing Damage", "explanation": "Intentional damage to property or public infrastructure."},
+    "471": {"title": "Forgery / Fake Documents", "explanation": "Using forged or fake documents as genuine under Section 471 IPC."},
     "3": {"title": "Penetrative Sexual Assault", "explanation": "Offence involving sexual penetration against a minor under Section 3 of the POCSO Act."},
     "4": {"title": "Punishment for Penetrative Sexual Assault", "explanation": "Punishment for penetrative sexual assault under Section 4 of the POCSO Act."},
     "7": {"title": "Sexual Assault on Child", "explanation": "Sexual assault without penetration under Section 7 of the POCSO Act."},
